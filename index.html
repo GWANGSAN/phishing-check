@@ -30,7 +30,7 @@ button {
     width:100%;
     padding:14px;
     margin-top:10px;
-    font-size:16px;
+    font-size:20px;
     border:none;
     border-radius:8px;
 }
@@ -72,14 +72,25 @@ button {
 </p>
 
 <!-- 영상 버튼 -->
-<button class="video" onclick="watchVideo()">🎥 보이스피싱 예방 영상 시청</button>
+<button class="video" onclick="showVideo()">🎥 보이스피싱 예방 영상 시청</button>
 
-<!-- 영상 표시 영역 -->
+<!-- 영상 영역 -->
 <div id="videoBox" style="display:none; margin-top:15px;">
-    <iframe width="100%" height="200"
-        src="https://www.youtube.com/embed/tV-yM5EWJ3k"
-        frameborder="0" allowfullscreen>
+
+    <!-- iframe 영상 -->
+    <iframe id="ytFrame" width="100%" height="200"
+        src=""
+        frameborder="0"
+        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen>
     </iframe>
+
+    <!-- 차단 대비 버튼 -->
+    <button style="margin-top:10px; background:#555; color:white;"
+        onclick="openYoutube()">
+        ▶ 영상이 보이지 않을 경우 클릭하여 시청
+    </button>
+
 </div>
 
 <!-- 진단 시작 -->
@@ -92,7 +103,7 @@ button {
 '2026. 4. 3. 피해자 000 피해금 1억 현금 전달 피해'<br>
 검사사칭 - 특급안건 수사 중이라며 자산검수를 이유로 현금 인출 요구<br><br>
 
-'2026. 4. 5. 피해자 000 피해금 3000만 원 계좌이체 피해'<br>
+'2026. 4. 5. 피해자 000 피해금 3000만 원 계좌이체 피해'<br><br>
 대환대출 - 정부지원 대출 사칭 후 법무법인 계좌로 이체 유도
 
 '금융기관, 수사기관은 절대 돈을 요구하지 않습니다.<br>
@@ -121,14 +132,23 @@ button {
 
 let videoWatched = false;
 
-// 영상 표시 + 버튼 활성화
-function watchVideo(){
+// 영상 표시 + 자동 재생
+function showVideo(){
+
+    document.getElementById("ytFrame").src =
+        "https://www.youtube.com/embed/tV-yM5EWJ3k?autoplay=1";
+
     document.getElementById("videoBox").style.display="block";
 
     videoWatched = true;
     const btn = document.getElementById("startBtn");
     btn.disabled = false;
     btn.classList.add("active");
+}
+
+// 외부 유튜브 이동 (차단 대비)
+function openYoutube(){
+    window.location.href = "https://youtu.be/tV-yM5EWJ3k";
 }
 
 const questions = [
