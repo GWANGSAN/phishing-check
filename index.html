@@ -30,7 +30,7 @@ button {
     width:100%;
     padding:14px;
     margin-top:10px;
-    font-size:20px;
+    font-size:16px;
     border:none;
     border-radius:8px;
 }
@@ -72,12 +72,10 @@ button {
 </p>
 
 <!-- 영상 버튼 -->
-<button class="video" onclick="showVideo()">🎥 보이스피싱 예방 영상 시청</button>
+<button id="videoBtn" class="video">🎥 보이스피싱 예방 영상 시청</button>
 
 <!-- 영상 영역 -->
 <div id="videoBox" style="display:none; margin-top:15px;">
-
-    <!-- iframe 영상 -->
     <iframe id="ytFrame" width="100%" height="200"
         src=""
         frameborder="0"
@@ -85,16 +83,14 @@ button {
         allowfullscreen>
     </iframe>
 
-    <!-- 차단 대비 버튼 -->
     <button style="margin-top:10px; background:#555; color:white;"
-        onclick="openYoutube()">
-        ▶ 영상이 보이지 않을 경우 클릭하여 시청
+        id="externalBtn">
+        ▶ 영상이 보이지 않을 경우 클릭
     </button>
-
 </div>
 
 <!-- 진단 시작 -->
-<button id="startBtn" class="start" disabled onclick="start()">진단 시작</button>
+<button id="startBtn" class="start" disabled>진단 시작</button>
 
 <!-- 피해 사례 -->
 <div class="caseBox">
@@ -103,10 +99,8 @@ button {
 '2026. 4. 3. 피해자 000 피해금 1억 현금 전달 피해'<br>
 검사사칭 - 특급안건 수사 중이라며 자산검수를 이유로 현금 인출 요구<br><br>
 
-'2026. 4. 5. 피해자 000 피해금 3000만 원 계좌이체 피해'<br><br>
+'2026. 4. 5. 피해자 000 피해금 3000만 원 계좌이체 피해'<br>
 대환대출 - 정부지원 대출 사칭 후 법무법인 계좌로 이체 유도
-
-'금융기관, 수사기관은 절대 돈을 요구하지 않습니다.<br>
 </div>
 
 </div>
@@ -114,15 +108,15 @@ button {
 <!-- 질문 -->
 <div id="quiz" class="hidden">
 <div id="question"></div>
-<button class="yes" onclick="answer(true)">예</button>
-<button class="no" onclick="answer(false)">아니오</button>
+<button id="yesBtn" class="yes">예</button>
+<button id="noBtn" class="no">아니오</button>
 </div>
 
 <!-- 결과 -->
 <div id="resultBox" class="hidden">
 <h2>🚨 보이스피싱 경고</h2>
 <div id="result"></div>
-<button onclick="restart()">다시 시작</button>
+<button id="restartBtn">다시 시작</button>
 </div>
 
 </div>
@@ -130,26 +124,27 @@ button {
 
 <script>
 
+document.addEventListener("DOMContentLoaded", function(){
+
 let videoWatched = false;
 
-// 영상 표시 + 자동 재생
-function showVideo(){
+const videoBtn = document.getElementById("videoBtn");
+const startBtn = document.getElementById("startBtn");
+const videoBox = document.getElementById("videoBox");
+const ytFrame = document.getElementById("ytFrame");
+const externalBtn = document.getElementById("externalBtn");
 
-    document.getElementById("ytFrame").src =
-        "https://www.youtube.com/embed/tV-yM5EWJ3k?autoplay=1";
+const intro = document.getElementById("intro");
+const quiz = document.getElementById("quiz");
+const resultBox = document.getElementById("resultBox");
 
-    document.getElementById("videoBox").style.display="block";
+const questionEl = document.getElementById("question");
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const resultEl = document.getElementById("result");
 
-    videoWatched = true;
-    const btn = document.getElementById("startBtn");
-    btn.disabled = false;
-    btn.classList.add("active");
-}
-
-// 외부 유튜브 이동 (차단 대비)
-function openYoutube(){
-    window.location.href = "https://youtu.be/tV-yM5EWJ3k";
-}
+let index = 0;
+let score = 0;
 
 const questions = [
 "저금리, 정부지원, 소상공인, 대환대출 전화를 받은 적이 있습니까?",
@@ -188,40 +183,62 @@ const questions = [
 "명의도용 사건의 경우 피의자가 아닌 피해자임을 알고 있습니까?"
 ];
 
-let index=0;
-let score=0;
+// 🎥 영상 버튼
+videoBtn.addEventListener("click", function(){
+    ytFrame.src = "https://www.youtube.com/embed/tV-yM5EWJ3k?autoplay=1";
+    videoBox.style.display = "block";
 
-function start(){
+    videoWatched = true;
+    startBtn.disabled = false;
+    startBtn.classList.add("active");
+});
+
+// ▶ 외부 열기
+externalBtn.addEventListener("click", function(){
+    window.location.href = "https://youtu.be/tV-yM5EWJ3k";
+});
+
+// ▶ 진단 시작
+startBtn.addEventListener("click", function(){
     if(!videoWatched){
         alert("먼저 영상을 시청해주세요.");
         return;
     }
 
-    document.getElementById("intro").style.display="none";
-    document.getElementById("quiz").style.display="block";
+    intro.style.display = "none";
+    quiz.style.display = "block";
     loadQuestion();
-}
+});
 
 function loadQuestion(){
-    document.getElementById("question").innerText=questions[index];
+    questionEl.innerText = questions[index];
 }
 
-function answer(v){
-    if(v) score++;
-    index++;
+// ▶ 답변
+yesBtn.addEventListener("click", function(){
+    score++;
+    next();
+});
 
-    if(index<questions.length){
+noBtn.addEventListener("click", function(){
+    next();
+});
+
+function next(){
+    index++;
+    if(index < questions.length){
         loadQuestion();
     } else {
         showResult();
     }
 }
 
+// ▶ 결과
 function showResult(){
-    document.getElementById("quiz").style.display="none";
-    document.getElementById("resultBox").style.display="block";
+    quiz.style.display = "none";
+    resultBox.style.display = "block";
 
-    let text="";
+    let text = "";
 
     if(score >= 3){
         text="현재 보이스피싱 진행 가능성이 매우 높습니다.\n\n"
@@ -235,14 +252,18 @@ function showResult(){
         + "기관은 절대 현금 요구를 하지 않습니다.";
     }
 
-    document.getElementById("result").innerText=text;
+    resultEl.innerText = text;
 }
 
-function restart(){
-    index=0; score=0;
-    document.getElementById("resultBox").style.display="none";
-    document.getElementById("intro").style.display="block";
-}
+// ▶ 다시 시작
+document.getElementById("restartBtn").addEventListener("click", function(){
+    index = 0;
+    score = 0;
+    resultBox.style.display = "none";
+    intro.style.display = "block";
+});
+
+});
 
 </script>
 
