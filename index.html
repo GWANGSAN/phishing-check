@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>보이스피싱 정밀 진단</title>
+<title>보이스피싱 정밀진단</title>
 
 <style>
 body { margin:0; font-family: Arial; background:#f1f4f8; }
@@ -21,28 +21,34 @@ body { margin:0; font-family: Arial; background:#f1f4f8; }
 .card {
     background:white;
     border-radius:12px;
-    padding:25px;
+    padding:20px;
     box-shadow:0 3px 12px rgba(0,0,0,0.2);
     text-align:center;
 }
 
 button {
     width:100%;
-    padding:15px;
+    padding:14px;
     margin-top:10px;
     font-size:16px;
     border:none;
     border-radius:8px;
 }
 
-.start { background:#003366; color:white; }
+.video { background:#d9534f; color:white; }
+.start { background:#999; color:white; }
+.start.active { background:#003366; }
 .yes { background:#d9534f; color:white; }
 .no { background:#0275d8; color:white; }
 
-#question { margin:20px 0; font-size:18px; }
-#result { white-space:pre-line; text-align:left; margin-top:15px; }
-
-img { width:100%; margin-top:15px; border-radius:8px; }
+.caseBox {
+    margin-top:15px;
+    padding:12px;
+    background:#fff3cd;
+    border-radius:8px;
+    text-align:left;
+    font-size:14px;
+}
 
 .hidden { display:none; }
 </style>
@@ -50,34 +56,48 @@ img { width:100%; margin-top:15px; border-radius:8px; }
 
 <body>
 
-<div class="header">🚔 광주광산경찰서 피싱범죄수사팀</div>
+<div class="header">🚔 광주광산경찰서 보이스피싱 예방 시스템</div>
 
 <div class="container">
 <div class="card">
 
 <!-- 첫 화면 -->
 <div id="intro">
-<h2>보이스피싱 정밀 진단</h2>
+
+<h2>보이스피싱 정밀진단</h2>
+
 <p>
-최근 카드배송, 기관사칭, 원격제어 등을 이용한 보이스피싱이 증가하고 있습니다.<br><br>
-간단한 질문을 통해 현재 상황의 위험도를 확인해보세요.
+최근 카드배송, 기관사칭(검찰, 금융감독원, 경찰), 저금리대환대출, 악성어플 등을 이용한 보이스피싱이 증가하고 있습니다.<br><br>
+반드시 영상을 시청 후 진단을 진행해주세요.
 </p>
-<button class="start" onclick="start()">진단 시작하기</button>
+
+<button class="video" onclick="watchVideo()">🎥 보이스피싱 예방 영상 시청</button>
+
+<button id="startBtn" class="start" disabled onclick="start()">진단 시작</button>
+
+<div class="caseBox">
+<b>🚨 실제 피해 사례</b><br><br>
+
+'2026. 4. 3. 피해자 000 피해금 1억 현금 전달 피해'<br>
+검사사칭 - 특급안건 수사 중이라며 자산검수를 이유로 현금 인출 요구<br><br>
+
+'2026. 4. 5. 피해자 000 피해금 3000만 원 계좌이체 피해'<br>
+대환대출 - 정부지원 대출 사칭 후 법무법인 계좌로 이체 유도
 </div>
 
-<!-- 질문 화면 -->
+</div>
+
+<!-- 질문 -->
 <div id="quiz" class="hidden">
-<div id="progress"></div>
 <div id="question"></div>
 <button class="yes" onclick="answer(true)">예</button>
 <button class="no" onclick="answer(false)">아니오</button>
 </div>
 
-<!-- 결과 화면 -->
+<!-- 결과 -->
 <div id="resultBox" class="hidden">
-<h2>진단 결과</h2>
+<h2>🚨 보이스피싱 경고</h2>
 <div id="result"></div>
-
 <button onclick="restart()">다시 시작</button>
 </div>
 
@@ -85,6 +105,18 @@ img { width:100%; margin-top:15px; border-radius:8px; }
 </div>
 
 <script>
+
+let videoWatched = false;
+
+function watchVideo(){
+    window.open("https://youtu.be/tV-yM5EWJ3k?si=a17Me1xy56hg8isO","_blank");
+
+    // 영상 시청 버튼 누르면 활성화
+    videoWatched = true;
+    const btn = document.getElementById("startBtn");
+    btn.disabled = false;
+    btn.classList.add("active");
+}
 
 const questions = [
 "저금리, 정부지원, 소상공인, 대환대출 전화를 받은 적이 있습니까?",
@@ -125,6 +157,11 @@ let index=0;
 let score=0;
 
 function start(){
+    if(!videoWatched){
+        alert("먼저 영상을 시청해주세요.");
+        return;
+    }
+
     document.getElementById("intro").style.display="none";
     document.getElementById("quiz").style.display="block";
     loadQuestion();
@@ -132,11 +169,10 @@ function start(){
 
 function loadQuestion(){
     document.getElementById("question").innerText=questions[index];
-    document.getElementById("progress").innerText=(index+1)+"/"+questions.length;
 }
 
 function answer(v){
-    if(v) score+=3;
+    if(v) score++;
     index++;
 
     if(index<questions.length){
@@ -151,15 +187,20 @@ function showResult(){
     document.getElementById("resultBox").style.display="block";
 
     let text="";
-    if(score>50){
-        text="🔴 매우 높은 위험\n즉시 112 신고 및 금융거래 중단";
-    } else if(score>25){
-        text="🟠 의심 상황\n공식기관 확인 필요";
+
+    if(score >= 3){
+        text="현재 보이스피싱 진행 가능성이 매우 높습니다.\n\n"
+        + "즉시 모든 통화를 종료하고\n"
+        + "112 또는 금융기관에 신고하십시오.\n\n"
+        + "앱 설치 및 송금 요구는 100% 사기입니다.";
     } else {
-        text="🟢 낮은 위험\n예방수칙 숙지";
+        text="보이스피싱 위험 신호가 감지되었습니다.\n\n"
+        + "공식기관에 직접 확인하고\n"
+        + "의심 상황은 즉시 신고하십시오.\n\n"
+        + "기관은 절대 현금 요구를 하지 않습니다.";
     }
 
-    document.getElementById("result").innerText="점수: "+score+"\n\n"+text;
+    document.getElementById("result").innerText=text;
 }
 
 function restart(){
