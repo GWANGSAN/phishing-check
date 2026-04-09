@@ -158,6 +158,20 @@ button{
     background:#ffebee;
     border-left:6px solid #c62828;
 }
+
+    @keyframes blink{
+    0%{opacity:1;}
+    50%{opacity:0.4;}
+    100%{opacity:1;}
+}
+
+.blink{
+    animation:blink 1s infinite;
+}
+
+.blink{
+    animation:blink 1s infinite;
+}    
 </style>
 </head>
 
@@ -299,9 +313,10 @@ document.getElementById("videoBtn").onclick = function(){
     startBtn.innerText = "영상 시청 중... (30초 후 시작 가능)";
 
     setTimeout(()=>{
-        startBtn.disabled = false;
-        startBtn.innerText = "진단 시작";
-    },30000);
+    startBtn.disabled = false;
+    startBtn.innerText = "진단 시작";
+    startBtn.classList.add("blink"); // 🔥 추가
+},30000);
 };
 
 document.getElementById("externalBtn").onclick = function(){
