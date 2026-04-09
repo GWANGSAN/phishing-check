@@ -247,12 +247,12 @@ document.getElementById("videoBtn").onclick = function(){
     },200);
 
     startBtn.disabled = true;
-    startBtn.innerText = "영상 시청 중... (15초 후 시작 가능)";
+    startBtn.innerText = "영상 시청 중... (30초 후 시작 가능)";
 
     setTimeout(()=>{
         startBtn.disabled = false;
         startBtn.innerText = "진단 시작";
-    },15000);
+    },30000);
 };
 
 document.getElementById("externalBtn").onclick = function(){
