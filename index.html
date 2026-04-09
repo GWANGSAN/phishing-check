@@ -10,31 +10,40 @@ body{
     margin:0;
     font-family:"Noto Sans KR", Arial;
     background:#eef2f6;
+    font-size:20px; /* 👈 노인용 확대 */
 }
 
 .header{
     background:#002b5c;
     color:white;
-    padding:18px;
+    padding:22px;
     text-align:center;
-    font-weight:700;
+    font-weight:900;
+    font-size:26px; /* 👈 확대 */
 }
 
-.container{max-width:600px;margin:20px auto;padding:15px;}
+.container{
+    max-width:650px;
+    margin:20px auto;
+    padding:15px;
+}
 
 .card{
     background:white;
     border-radius:14px;
-    padding:22px;
+    padding:26px;
     box-shadow:0 4px 14px rgba(0,0,0,0.12);
 }
 
+h2{ color:#002b5c; font-size:26px; }
+
 button{
     width:100%;
-    padding:14px;
-    margin-top:10px;
+    padding:18px;
+    margin-top:12px;
     border:none;
-    border-radius:10px;
+    border-radius:12px;
+    font-size:20px; /* 👈 확대 */
     cursor:pointer;
 }
 
@@ -47,62 +56,72 @@ button{
     margin-top:15px;
     background:#fff7e6;
     border-left:6px solid #ff9800;
-    padding:12px;
+    padding:16px;
     border-radius:10px;
+    font-size:18px;
+}
+
+.caseTitle{
+    font-weight:900;
+    color:#d35400;
+    margin-bottom:10px;
+    font-size:20px;
 }
 
 .caseItem{
     background:#fff;
-    padding:10px;
+    padding:12px;
     border-radius:8px;
-    margin-top:8px;
-    font-size:13px;
+    margin-top:10px;
+    font-size:18px;
     border:1px solid #eee;
 }
 
 .hidden{display:none;}
 
-#question{font-size:20px;font-weight:700;margin:20px 0;}
+#question{
+    font-size:26px;
+    font-weight:900;
+    margin:25px 0;
+}
 
-.choiceBtn{background:#1565c0;color:white;}
+.choiceBtn{
+    background:#1565c0;
+    color:white;
+    font-size:20px;
+    padding:16px;
+}
 
 .descBox{
     margin-top:10px;
-    padding:10px;
+    padding:14px;
     background:#eef5ff;
     display:none;
     border-radius:8px;
+    font-size:18px;
 }
 
 .progressBox{
     background:#ddd;
     border-radius:10px;
+    margin-top:15px;
 }
 
 .progressBar{
-    height:18px;
+    height:22px;
     width:0%;
     background:#c62828;
+    transition:0.3s;
 }
 
 .danger{background:#2b0000 !important;color:white;}
 
 #preventionMsg{
-    margin-top:12px;
-    padding:12px;
+    margin-top:14px;
+    padding:14px;
     background:#eef6ff;
     border-radius:10px;
-    font-size:14px;
-}
-
-#errorBox{
-    margin-top:10px;
-    background:#ffecec;
-    color:#c62828;
-    padding:10px;
-    border-radius:8px;
-    font-size:13px;
-    display:none;
+    font-size:18px;
 }
 </style>
 </head>
@@ -114,30 +133,30 @@ button{
 <div class="container">
 <div class="card">
 
-<!-- VIDEO -->
-<button class="video" id="videoBtn">영상 시청</button>
-
-<div id="videoWrap" style="margin-top:10px; display:none;">
-    <iframe id="yt"
-        width="100%" height="200"
-        frameborder="0"
-        allow="autoplay; encrypted-media"
-        allowfullscreen></iframe>
-
-    <button class="gray" id="fallback">영상 안 나올 경우</button>
-</div>
-
-<!-- ERROR -->
-<div id="errorBox"></div>
-
 <!-- INTRO -->
 <div id="intro">
 
-<div class="caseBox">
-<b>🚨 실제 사례</b>
+<h2>📢 보이스피싱 진단 안내</h2>
 
-<div class="caseItem">검찰 사칭 → 1억 피해</div>
-<div class="caseItem">대출 사기 → 3,000만 피해</div>
+<p style="font-size:20px;">
+이 프로그램은 보이스피싱 위험도를 간단히 진단합니다.<br>
+천천히 읽고 진행해주세요.
+</p>
+
+<button class="video" id="videoBtn">▶ 영상 시청</button>
+
+<div class="caseBox">
+<div class="caseTitle">🚨 실제 피해 사례</div>
+
+<div class="caseItem">
+<b>검찰 사칭</b><br>
+1억 원 피해 / 현금 전달 요구
+</div>
+
+<div class="caseItem">
+<b>대출 사기</b><br>
+3,000만 원 피해 / 계좌이체 유도
+</div>
 </div>
 
 <button class="primary" id="startBtn">진단 시작</button>
@@ -147,7 +166,7 @@ button{
 <div id="quiz" class="hidden">
 <div id="question"></div>
 <div id="choices"></div>
-<div id="descBox"></div>
+<div id="descBox" class="descBox"></div>
 <button id="nextBtn" class="primary hidden">다음</button>
 </div>
 
@@ -157,13 +176,16 @@ button{
 <h2>결과</h2>
 
 <div class="progressBox">
-<div id="bar" class="progressBar"></div>
+<div id="progressBar" class="progressBar"></div>
 </div>
 
 <div id="result"></div>
-<div id="score"></div>
+<div id="scoreText"></div>
 
 <div id="preventionMsg"></div>
+
+<button class="green">피해예방 안내</button>
+<button class="gray" onclick="location.reload()">다시 시작</button>
 
 </div>
 
@@ -173,145 +195,127 @@ button{
 <script>
 
 /* =========================
-   질문 (자동검증 포함)
+   질문 (수정/추가/삭제 가능 구조)
 ========================= */
 
 const questions = [
-{ q:"카드 배송 전화를 받았습니까?", choices:["예","아니오"], answer:1, risk:1, desc:"카드 사칭" },
-{ q:"검찰 사칭을 받았습니까?", choices:["예","아니오"], answer:1, risk:3, desc:"기관 사칭" },
-{ q:"현금 요구를 받았습니까?", choices:["예","아니오"], answer:1, risk:5, desc:"고위험" }
+{
+ q:"카드 배송 또는 카드 발급 관련 전화를 받은 적이 있습니까?",
+ choices:["예","아니오"],
+ answer:1,
+ risk:1,
+ desc:"카드 사칭은 대표적인 보이스피싱입니다."
+},
+{
+ q:"본인이 신청하지 않은 카드가 발급되었다고 들었습니까?",
+ choices:["예","아니오"],
+ answer:1,
+ risk:2,
+ desc:"명의도용 사기입니다."
+},
+{
+ q:"금융기관 또는 검찰을 사칭한 전화를 받았습니까?",
+ choices:["예","아니오"],
+ answer:1,
+ risk:3,
+ desc:"기관 사칭 수법입니다."
+},
+{
+ q:"현금 전달 또는 계좌이체 요구를 받았습니까?",
+ choices:["예","아니오"],
+ answer:1,
+ risk:5,
+ desc:"즉시 사기 의심 상황입니다."
+}
 ];
 
-/* =========================
-   영상 수정 (안정 embed)
-========================= */
+let index = 0;
+let score = 0;
 
-document.getElementById("videoBtn").onclick=()=>{
-    document.getElementById("videoWrap").style.display="block";
+const intro = document.getElementById("intro");
+const quiz = document.getElementById("quiz");
+const nextBtn = document.getElementById("nextBtn");
 
-    document.getElementById("yt").src=
-    "https://www.youtube.com/embed/tV-yM5EWJ3k?rel=0&autoplay=1";
-};
-
-/* fallback */
-document.getElementById("fallback").onclick=()=>{
-    window.open("https://www.youtube.com/watch?v=tV-yM5EWJ3k","_blank");
-};
-
-/* =========================
-   자동 질문 검증
-========================= */
-
-function validateQuestions(){
-
-    let errors=[];
-
-    questions.forEach((q,i)=>{
-
-        if(!q.q) errors.push((i+1)+"번: 질문 없음");
-        if(!Array.isArray(q.choices) || q.choices.length<2)
-            errors.push((i+1)+"번: choices 오류");
-        if(q.answer===undefined)
-            errors.push((i+1)+"번: answer 없음");
-        if(q.risk===undefined)
-            errors.push((i+1)+"번: risk 없음");
-    });
-
-    if(errors.length>0){
-        let box=document.getElementById("errorBox");
-        box.style.display="block";
-        box.innerHTML="🚨 질문 오류 발견<br><br>"+errors.join("<br>");
-    }
-
-    console.log("검증 완료:", errors.length+"개 오류");
-}
-
-validateQuestions();
-
-/* =========================
-   시스템
-========================= */
-
-let i=0;
-let score=0;
-
-const intro=document.getElementById("intro");
-const quiz=document.getElementById("quiz");
-
-document.getElementById("startBtn").onclick=()=>{
+document.getElementById("startBtn").onclick = () => {
     intro.classList.add("hidden");
     quiz.classList.remove("hidden");
-    load();
+    index = 0;
+    score = 0;
+    loadQ();
 };
 
-function load(){
-    let q=questions[i];
+function loadQ() {
+    const q = questions[index];
 
-    document.getElementById("question").innerText=q.q;
+    document.getElementById("question").innerText = q.q;
 
-    let c=document.getElementById("choices");
-    c.innerHTML="";
+    const c = document.getElementById("choices");
+    c.innerHTML = "";
 
-    q.choices.forEach((t,idx)=>{
-        let b=document.createElement("button");
-        b.className="choiceBtn";
-        b.innerText=t;
-        b.onclick=()=>ans(idx);
+    q.choices.forEach((t, i) => {
+        let b = document.createElement("button");
+        b.className = "choiceBtn";
+        b.innerText = t;
+        b.onclick = () => answer(i);
         c.appendChild(b);
     });
 
-    document.getElementById("descBox").style.display="none";
-    document.getElementById("nextBtn").classList.add("hidden");
+    document.getElementById("descBox").style.display = "none";
+    nextBtn.classList.add("hidden");
 }
 
-function ans(idx){
-    let q=questions[i];
+function answer(i) {
+    const q = questions[index];
 
-    if(idx!==q.answer) score+=q.risk;
+    if (i !== q.answer) score += q.risk;
 
-    let d=document.getElementById("descBox");
-    d.style.display="block";
-    d.innerText=q.desc;
+    let d = document.getElementById("descBox");
+    d.innerText = q.desc;
+    d.style.display = "block";
 
-    document.getElementById("nextBtn").classList.remove("hidden");
+    nextBtn.classList.remove("hidden");
 }
 
-document.getElementById("nextBtn").onclick=()=>{
-    i++;
-    if(i<questions.length) load();
-    else result();
+nextBtn.onclick = () => {
+    index++;
+    if (index < questions.length) {
+        loadQ();
+    } else {
+        result();
+    }
 };
 
-function result(){
+function result() {
 
     quiz.classList.add("hidden");
     document.getElementById("resultBox").classList.remove("hidden");
 
-    let max=questions.reduce((a,b)=>a+b.risk,0);
-    let p=(score/max)*100;
+    let max = questions.reduce((a, b) => a + b.risk, 0);
+    let percent = (score / max) * 100;
 
-    document.getElementById("bar").style.width=p+"%";
+    document.getElementById("progressBar").style.width = percent + "%";
 
-    let r="";
+    let msg = "";
 
-    if(p>=70) r="🚨 위험";
-    else if(p>=40) r="⚠️ 주의";
-    else r="✅ 안전";
+    if (percent >= 70) msg = "🚨 매우 위험";
+    else if (percent >= 40) msg = "⚠️ 주의";
+    else msg = "✅ 안전";
 
-    document.getElementById("result").innerText=r;
-    document.getElementById("score").innerText="위험도 "+p.toFixed(1)+"%";
+    document.getElementById("result").innerText = msg;
+    document.getElementById("scoreText").innerText = "위험도: " + percent.toFixed(1) + "%";
 
-    let msg="";
+    /* 🚨 마지막 경고 문구 */
+    let p = "";
 
-    if(p>=70){
-        msg="즉시 112 신고<br>절대 송금 금지";
-    }else if(p>=40){
-        msg="의심 전화 즉시 종료<br>가족 확인";
-    }else{
-        msg="보이스피싱 계속 증가";
+    if (percent >= 70) {
+        p = "🚨 즉시 신고 필요 (112 / 182)<br>금융기관은 절대 돈 요구 안함<br><b>즉시 통화 종료하세요</b>";
+    } else if (percent >= 40) {
+        p = "⚠️ 의심 상황입니다<br>가족 또는 기관 직접 확인 필요";
+    } else {
+        p = "✅ 안전 수준입니다<br>하지만 보이스피싱은 계속 증가 중입니다";
     }
 
-    document.getElementById("preventionMsg").innerHTML=msg;
+    document.getElementById("preventionMsg").innerHTML = p;
 }
 
 </script>
