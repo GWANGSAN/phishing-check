@@ -150,12 +150,27 @@ button{
     </button>
 </div>
 
+<!-- 기존 caseBox 유지 -->
 <div class="caseBox">
 <div class="caseItem">검찰 사칭 - 1억 원 피해/자산검수</div>
 <div class="caseItem">대출 사기 - 3,000만 원 피해/계약위반</div>
 </div>
 
 <button class="primary" id="startBtn" disabled>진단 시작</button>
+
+</div>
+
+<!-- 🔥 추가된 CASE 화면 -->
+<div id="caseScreen" class="hidden">
+
+<h2>🚨 실제 피해사례</h2>
+
+<div class="caseBox">
+    <div class="caseItem">검찰 사칭 - 1억 원 피해/자산검수</div>
+    <div class="caseItem">대출 사기 - 3,000만 원 피해/계약위반</div>
+</div>
+
+<button id="caseNextBtn" class="primary">다음</button>
 
 </div>
 
@@ -194,10 +209,6 @@ button{
 
 <script>
 
-/* =========================
-   질문 전체 (원본 그대로 유지)
-========================= */
-
 const questions = [
 { q:"카드 배송 또는 카드 발급 관련 전화를 받은 적이 있습니까?", choices:["예","아니오"], answer:1, desc:"카드 배송 사칭은 대표적인 보이스피싱 수법입니다. 본인이 신청하지 않았다면 100% 의심해야 합니다.", risk:1 },
 { q:"본인이 신청하지 않은 카드가 발급되었다고 들었습니까?", choices:["예","아니오"], answer:1, desc:"명의도용을 빌미로 공포심을 유발하는 수법입니다. 실제 카드사는 이런 방식으로 연락하지 않습니다.", risk:2 },
@@ -223,13 +234,12 @@ const questions = [
 { q:"기존 대출 상환 요구를 받았습니까?", choices:["예","아니오"], answer:1, desc:"대출 사기의 핵심 패턴입니다.", risk:4 },
 ];
 
-/* ========================= */
-
 let index = 0;
 let score = 0;
 
 const intro = document.getElementById("intro");
 const quiz = document.getElementById("quiz");
+const caseScreen = document.getElementById("caseScreen");
 const nextBtn = document.getElementById("nextBtn");
 
 const ytFrame = document.getElementById("ytFrame");
@@ -259,12 +269,21 @@ document.getElementById("externalBtn").onclick = function(){
     window.open("https://youtu.be/tV-yM5EWJ3k", "_blank");
 };
 
-/* 시작 */
+/* 시작 → 사례 */
 startBtn.onclick = () => {
     intro.classList.add("hidden");
+    caseScreen.classList.remove("hidden");
+};
+
+/* 사례 → 질문 */
+document.getElementById("caseNextBtn").onclick = () => {
+
+    caseScreen.classList.add("hidden");
     quiz.classList.remove("hidden");
+
     index = 0;
     score = 0;
+
     loadQ();
 };
 
