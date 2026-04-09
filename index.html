@@ -346,11 +346,20 @@ function result(){
     quiz.classList.add("hidden");
     document.getElementById("resultBox").classList.remove("hidden");
 
-    let max = questions.reduce((a,b)=>a+b.risk,0);
-    let percent = (score / max) * 100;
+    /* 🔥 결과 메시지 */
+    let msg =
+        highRiskDetected ? "🚨 고위험 의심"
+        : selectedRisks.length > 0 ? "⚠️ 주의 필요"
+        : "✅ 안전";
 
-    /* 🔥 추가 */
-   let detailText = "<b>⚠️ 해당된 위험 항목</b><br>";
+    document.getElementById("result").innerText = msg;
+
+    /* 🔥 점수/진행바 제거 */
+    document.getElementById("scoreText").innerText = "";
+    document.getElementById("progressBar").style.width = "0%";
+
+    /* 🔥 선택 항목 표시 */
+    let detailText = "<b>⚠️ 해당된 위험 항목</b><br>";
 
     if(selectedRisks.length === 0){
         detailText += "해당 없음";
