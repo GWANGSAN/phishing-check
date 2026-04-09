@@ -48,7 +48,7 @@ button{
 }
 
 .primary{background:#002b5c;color:white;}
-.video{background:#c62828;color:white;}
+.video{background:linear-gradient(45deg,#c62828,#ff5252);color:white;font-weight:900;}
 .gray{background:#777;color:white;}
 .green{background:#2e7d32;color:white;}
 
@@ -66,8 +66,9 @@ button{
     padding:12px;
     border-radius:8px;
     margin-top:10px;
-    font-size:18px;
+    font-size:19px;
     border:1px solid #eee;
+    line-height:1.5;
 }
 
 .hidden{display:none;}
@@ -83,6 +84,16 @@ button{
     color:white;
     font-size:20px;
     padding:16px;
+}
+
+.choiceBtn:active{
+    transform:scale(0.97);
+    background:#0d47a1;
+}
+
+#nextBtn{
+    background:#ff9800;
+    font-weight:900;
 }
 
 .descBox{
@@ -106,6 +117,38 @@ button{
     width:0%;
     background:#c62828;
     transition:0.3s;
+}
+
+/* 결과 강조 */
+#result{
+    font-size:32px;
+    font-weight:900;
+    text-align:center;
+    margin-top:10px;
+}
+
+/* 위험 항목 박스 */
+#detailResult{
+    margin-top:18px;
+    padding:16px;
+    border-radius:10px;
+    line-height:1.6;
+}
+
+/* 상태별 색상 */
+.safeBox{
+    background:#e8f5e9;
+    border-left:6px solid #2e7d32;
+}
+
+.warnBox{
+    background:#fff8e1;
+    border-left:6px solid #ff9800;
+}
+
+.dangerBox{
+    background:#ffebee;
+    border-left:6px solid #c62828;
 }
 
 #preventionMsg{
@@ -188,17 +231,15 @@ button{
 
 <h2>결과</h2>
 
-<div class="progressBox">
-<div id="progressBar" class="progressBar"></div>
-</div>
+<p style="text-align:center; font-weight:700;">
+※ 실제 범죄 패턴 기반 진단 결과입니다
+</p>
 
 <div id="result"></div>
 <div id="scoreText"></div>
 
 <div id="preventionMsg"></div>
-
-<!-- 🔥 추가 -->
-<div id="detailResult" style="margin-top:15px; font-size:16px;"></div>
+<div id="detailResult"></div>
 
 <button class="green" onclick="downloadTool()">
 악성어플추출프로그램 다운로드
@@ -215,30 +256,30 @@ button{
 
 const questions = [
 { q:"카드 배송 또는 카드 발급 관련 전화를 받은 적이 있습니까?", choices:["예","아니오"], answer:1, desc:"카드 배송 사칭은 대표적인 보이스피싱 수법입니다. 본인이 신청하지 않았다면 100% 의심해야 합니다.", risk:1 },
-{ q:"본인이 신청하지 않은 카드가 발급되었다고 들었습니까?", choices:["예","아니오"], answer:1, desc:"명의도용을 빌미로 공포심을 유발하는 수법입니다. 실제 카드사는 이런 방식으로 연락하지 않습니다.", risk:5 },
-{ q:"명의도용 또는 범죄 연루를 전화로 들은 적이 있습니까?", choices:["예","아니오"], answer:1, desc:"검찰·경찰 사칭의 핵심 패턴입니다.", risk:5 },
-{ q:"금융감독원, 검찰, 경찰 등으로 부터 전화를 받은 적이 있습니까?", choices:["예","아니오"], answer:1, desc:"대표적 사기 패턴입니다.", risk:3 },
-{ q:"사건번호 또는 수사를 언급했습니까?", choices:["예","아니오"], answer:1, desc:"사건조회는 가까운 지구대 또는 경찰서로 방문하세요.", risk:5 },
-{ q:"구속, 범죄 연루 등의 말을 했습니까?", choices:["예","아니오"], answer:1, desc:"공포를 조성해 판단력을 흐리게 만드는 전형적인 수법입니다.", risk:5 },
-{ q:"특급사건, 극비수사, 보완수사, 약식수사에 대해 들은 적이 있습니까?", choices:["예","아니오"], answer:1, desc:"'극비'라는 단어는 피해자를 고립시키기 위한 장치입니다.", risk:5 },
-{ q:"매시간마다 행동을 보고하는 -정시보고- 지시를 받았습니까?", choices:["예","아니오"], answer:1, desc:"완전히 통제된 상태로 만들기 위한 고위험 신호입니다.", risk:5 },
-{ q:"다른 사람에게 알리지 말라고 했습니까?", choices:["예","아니오"], answer:1, desc:"외부 도움을 차단하는 것은 100% 사기 패턴입니다.", risk:5 },
+{ q:"본인이 신청하지 않은 카드가 발급되었다고 들었습니까?", choices:["예","아니오"], answer:1, desc:"명의도용을 빌미로 공포심을 유발하는 수법입니다. 실제 카드사는 이런 방식으로 연락하지 않습니다.", risk:2 },
+{ q:"명의도용 또는 범죄 연루를 언급했습니까?", choices:["예","아니오"], answer:1, desc:"검찰·경찰 사칭의 핵심 패턴입니다.", risk:3 },
+{ q:"금융감독원, 검찰, 경찰 등 공공기관을 사칭했습니까?", choices:["예","아니오"], answer:1, desc:"대표적 사기 패턴입니다.", risk:3 },
+{ q:"사건번호 또는 수사를 언급했습니까?", choices:["예","아니오"], answer:1, desc:"실제 수사는 전화로 통보하지 않으며 사건번호를 먼저 알려주지 않습니다.", risk:2 },
+{ q:"구속, 범죄 연루 등의 말을 했습니까?", choices:["예","아니오"], answer:1, desc:"공포를 조성해 판단력을 흐리게 만드는 전형적인 수법입니다.", risk:3 },
+{ q:"특급사건, 극비수사, 보완수사, 약식수사에 대해 들은 적이 있습니까?", choices:["예","아니오"], answer:1, desc:"'극비'라는 단어는 피해자를 고립시키기 위한 장치입니다.", risk:2 },
+{ q:"통화 내용을 비밀로 하라고 했습니까?", choices:["예","아니오"], answer:1, desc:"정상적인 기관은 절대 비밀을 요구하지 않습니다.", risk:3 },
+{ q:"매시간마다 행동을 보고하는 -정시보고- 지시를 받았습니까?", choices:["예","아니오"], answer:1, desc:"완전히 통제된 상태로 만들기 위한 고위험 신호입니다.", risk:3 },
+{ q:"다른 사람에게 알리지 말라고 했습니까?", choices:["예","아니오"], answer:1, desc:"외부 도움을 차단하는 것은 100% 사기 패턴입니다.", risk:3 },
 { q:"휴대전화 점검을 이유로 앱 설치를 요구했습니까?", choices:["예","아니오"], answer:1, desc:"악성앱 설치 유도는 핵심 범죄 단계입니다.", risk:5 },
-{ q:"텔레그램, 라인 등 대화어플을 설치한 적이 있습니까?", choices:["예","아니오"], answer:1, desc:"수사기관은 메신저로 지시하지 않습니다.", risk:5 },
-{ q:"금융감독원(1332) 또는 검찰(1301)에 전화하라고 했습니까?", choices:["예","아니오"], answer:1, desc:"전화 가로채기 수법으로 연결됩니다.", risk:5 },
-{ q:"고객센터 전화 후 즉시 상담사가 연결되었습니까?", choices:["예","아니오"], answer:1, desc:"정상 기관은 대기 없이 바로 연결되지 않습니다.", risk:5 },
-{ q:"감시당한다고 느낀적이 있습니까?", choices:["예","아니오"], answer:1, desc:"CCTV로 지켜보고 있다고 심리적 압박", risk:5 },
+{ q:"텔레그램, 라인 등 대화어플을 설치한 적이 있습니까?", choices:["예","아니오"], answer:1, desc:"수사기관은 메신저로 지시하지 않습니다.", risk:3 },
+{ q:"금융감독원(1332) 또는 검찰(1301)에 전화하라고 했습니까?", choices:["예","아니오"], answer:1, desc:"전화 가로채기 수법으로 연결됩니다.", risk:4 },
+{ q:"고객센터 전화 후 즉시 상담사가 연결되었습니까?", choices:["예","아니오"], answer:1, desc:"정상 기관은 대기 없이 바로 연결되지 않습니다.", risk:3 },
+{ q:"감시당한다고 느꼈습니까?", choices:["예","아니오"], answer:1, desc:"심리적 압박 상태 → 매우 위험", risk:4 },
 { q:"현금 인출 또는 송금을 요구했습니까?", choices:["예","아니오"], answer:1, desc:"금전 요구 = 100% 사기", risk:5 },
-{ q:"명의도용 사건의 경우 피해자임을 알고 있습니까?", choices:["예","아니오"], answer:0, desc:"피해자를 피의자로 속이는 수법입니다.", risk:5 },
+{ q:"명의도용 사건의 경우 피해자임을 알고 있습니까?", choices:["예","아니오"], answer:0, desc:"피해자를 피의자로 속이는 수법입니다.", risk:2 },
 { q:"저금리 대환대출 전화를 받은 적이 있습니까?", choices:["예","아니오"], answer:1, desc:"대출 사칭도 매우 흔한 수법입니다.", risk:2 },
-{ q:"대출약정위반, 보증금 관련 내용을 들었습니까?", choices:["예","아니오"], answer:1, desc:"가짜 금융용어로 속이는 수법입니다.", risk:5 },
-{ q:"기존 대출 상환 요구를 받았습니까?", choices:["예","아니오"], answer:1, desc:"대출 사기의 핵심 패턴입니다.", risk:5 },
+{ q:"대출약정위반, 보증금 관련 내용을 들었습니까?", choices:["예","아니오"], answer:1, desc:"가짜 금융용어로 속이는 수법입니다.", risk:3 },
+{ q:"기존 대출 상환 요구를 받았습니까?", choices:["예","아니오"], answer:1, desc:"대출 사기의 핵심 패턴입니다.", risk:4 },
+{ q:"기존 대출 상환 요구를 받았습니까?", choices:["예","아니오"], answer:1, desc:"대출 사기의 핵심 패턴입니다.", risk:4 }
 ];
-    
+
 let index = 0;
 let score = 0;
-
-/* 🔥 추가 */
 let selectedRisks = [];
 let highRiskDetected = false;
 
@@ -246,58 +287,37 @@ const intro = document.getElementById("intro");
 const quiz = document.getElementById("quiz");
 const caseScreen = document.getElementById("caseScreen");
 const nextBtn = document.getElementById("nextBtn");
-
 const ytFrame = document.getElementById("ytFrame");
 const videoBox = document.getElementById("videoBox");
 const startBtn = document.getElementById("startBtn");
 
-/* 영상 */
 document.getElementById("videoBtn").onclick = function(){
-
     videoBox.style.display = "block";
-
-    ytFrame.src = "";
-    setTimeout(()=>{
-        ytFrame.src = "https://www.youtube.com/embed/tV-yM5EWJ3k?autoplay=1&mute=1&rel=0";
-    },200);
-
-    startBtn.disabled = true;
-    startBtn.innerText = "영상 시청 중... (30초 후 시작 가능)";
-
-    setTimeout(()=>{
-        startBtn.disabled = false;
-        startBtn.innerText = "진단 시작";
-    },0);
+    ytFrame.src = "https://www.youtube.com/embed/tV-yM5EWJ3k?autoplay=1&mute=1&rel=0";
 };
 
 document.getElementById("externalBtn").onclick = function(){
     window.open("https://youtu.be/tV-yM5EWJ3k", "_blank");
 };
 
-/* 시작 → 사례 */
 startBtn.onclick = () => {
     intro.classList.add("hidden");
     caseScreen.classList.remove("hidden");
 };
 
-/* 사례 → 질문 */
 document.getElementById("caseNextBtn").onclick = () => {
-
     caseScreen.classList.add("hidden");
     quiz.classList.remove("hidden");
-
     index = 0;
     score = 0;
-    selectedRisks = [];          /* 🔥 추가 */
-    highRiskDetected = false;    /* 🔥 추가 */
-
+    selectedRisks = [];
+    highRiskDetected = false;
     loadQ();
 };
 
 function loadQ(){
     const q = questions[index];
     document.getElementById("question").innerText = q.q;
-
     const c = document.getElementById("choices");
     c.innerHTML = "";
 
@@ -318,8 +338,6 @@ function answer(i){
 
     if(i !== q.answer){
         score += q.risk;
-
-        /* 🔥 추가 */
         selectedRisks.push(q.q);
         if(q.risk >= 4){
             highRiskDetected = true;
@@ -328,7 +346,6 @@ function answer(i){
 
     document.getElementById("descBox").innerText = q.desc;
     document.getElementById("descBox").style.display = "block";
-
     nextBtn.classList.remove("hidden");
 }
 
@@ -346,7 +363,6 @@ function result(){
     quiz.classList.add("hidden");
     document.getElementById("resultBox").classList.remove("hidden");
 
-    /* 🔥 결과 메시지 */
     let msg =
         highRiskDetected ? "🚨 고위험 의심"
         : selectedRisks.length > 0 ? "⚠️ 주의 필요"
@@ -354,17 +370,11 @@ function result(){
 
     document.getElementById("result").innerText = msg;
 
-    /* 🔥 점수/진행바 제거 */
-    document.getElementById("scoreText").innerText = "";
-    document.getElementById("progressBar").style.width = "0%";
-
-    /* 🔥 선택 항목 표시 */
     let detailText = "<b>⚠️ 해당된 위험 항목</b><br>";
 
     if(selectedRisks.length === 0){
         detailText += "해당 없음";
-        document.getElementById("preventionMsg").innerHTML =
-            "✅ 현재 위험 징후 없음";
+        document.getElementById("preventionMsg").innerHTML = "✅ 현재 위험 징후 없음";
     } else {
         selectedRisks.forEach((item, idx)=>{
             detailText += (idx+1) + ". " + item + "<br>";
@@ -377,6 +387,16 @@ function result(){
     }
 
     document.getElementById("detailResult").innerHTML = detailText;
+
+    const detailBox = document.getElementById("detailResult");
+
+    if(highRiskDetected){
+        detailBox.className = "dangerBox";
+    } else if(selectedRisks.length > 0){
+        detailBox.className = "warnBox";
+    } else {
+        detailBox.className = "safeBox";
+    }
 }
 
 function downloadTool(){
