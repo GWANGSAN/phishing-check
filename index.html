@@ -3,93 +3,118 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>보이스피싱 정밀진단</title>
+<title>보이스피싱 예방 진단 시스템</title>
 
 <style>
-body {
+body{
     margin:0;
-    font-family: Arial;
-    background:#f1f4f8;
-    font-size:18px;
-    transition:0.3s;
+    font-family:"Noto Sans KR", Arial;
+    background:#eef2f6;
 }
 
-.header {
-    background:#003366;
+.header{
+    background:#002b5c;
     color:white;
     padding:18px;
     text-align:center;
-    font-weight:bold;
+    font-weight:700;
     font-size:20px;
 }
 
-.container {
-    max-width:520px;
-    margin:20px auto;
+.container{
+    max-width:540px;
+    margin:25px auto;
     padding:15px;
 }
 
-.card {
+.card{
     background:white;
-    border-radius:12px;
-    padding:22px;
-    box-shadow:0 3px 12px rgba(0,0,0,0.2);
+    border-radius:14px;
+    padding:24px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.12);
     text-align:center;
 }
 
-h2 { font-size:26px; }
+h2{
+    font-size:24px;
+    margin-bottom:10px;
+    color:#002b5c;
+}
 
-button {
+p{
+    font-size:15px;
+    color:#444;
+    line-height:1.6;
+}
+
+button{
     width:100%;
-    padding:16px;
+    padding:15px;
     margin-top:12px;
-    font-size:18px;
+    font-size:16px;
     border:none;
     border-radius:10px;
+    cursor:pointer;
 }
 
-.video { background:#d9534f; color:white; }
-.start { background:#999; color:white; }
-.start.active { background:#003366; }
+/* 버튼 스타일 */
+.primary{ background:#002b5c; color:white; }
+.video{ background:#c62828; color:white; }
+.gray{ background:#777; color:white; }
+.green{ background:#2e7d32; color:white; }
 
-.choiceBtn { background:#0275d8; color:white; }
-
-#question {
-    font-size:22px;
-    font-weight:bold;
-    margin:25px 0;
+button:disabled{
+    background:#aaa;
+    cursor:not-allowed;
 }
 
-.descBox {
+.caseBox{
     margin-top:15px;
-    padding:14px;
-    background:#eef6ff;
+    background:#fff7e6;
+    border-left:5px solid #ff9800;
+    padding:12px;
+    font-size:13px;
+    text-align:left;
+}
+
+.hidden{ display:none; }
+
+#question{
+    font-size:20px;
+    font-weight:700;
+    margin:20px 0;
+    color:#111;
+}
+
+.choiceBtn{
+    background:#1565c0;
+    color:white;
+}
+
+.descBox{
+    margin-top:12px;
+    background:#eef5ff;
+    padding:12px;
     border-radius:8px;
+    font-size:14px;
     display:none;
 }
 
-.progressBox {
+.progressBox{
     margin-top:20px;
     background:#ddd;
     border-radius:10px;
     overflow:hidden;
 }
 
-.progressBar {
-    height:20px;
+.progressBar{
+    height:18px;
     width:0%;
-    background:#d9534f;
-    transition:0.5s;
+    background:#c62828;
+    transition:0.4s;
 }
 
-.scoreText {
-    margin-top:10px;
-    font-weight:bold;
-}
-
-.hidden { display:none; }
-
-.danger {
+.danger{
     background:#2b0000 !important;
     color:white;
 }
@@ -98,7 +123,7 @@ button {
 
 <body>
 
-<div class="header">🚔 광주광산경찰서 피싱범죄수사팀</div>
+<div class="header">🚔 경찰청 보이스피싱 예방 진단 시스템</div>
 
 <div class="container">
 <div class="card">
@@ -106,43 +131,29 @@ button {
 <!-- INTRO -->
 <div id="intro">
 
-<h2>보이스피싱 정밀진단</h2>
+<h2>보이스피싱 위험 진단</h2>
 
 <p>
-카드배송, 기관사칭(검찰·경찰·금감원), 저금리대출, 악성앱 설치 등<br>
-보이스피싱 위험을 진단합니다.<br><br>
-영상 시청 후 시작하세요.
+기관 사칭, 카드배송, 대출사기, 악성앱 설치 등<br>
+대표적인 보이스피싱 유형을 기반으로 위험도를 분석합니다.
 </p>
 
 <button id="videoBtn" class="video">🎥 예방 영상 시청</button>
 
-<div id="videoBox" style="display:none; margin-top:15px;">
-    <iframe id="ytFrame"
-        width="100%"
-        height="200"
-        src=""
-        frameborder="0"
-        allow="autoplay; encrypted-media; picture-in-picture"
-        allowfullscreen>
-    </iframe>
+<div id="videoBox" style="display:none; margin-top:12px;">
+    <iframe id="ytFrame" width="100%" height="200" frameborder="0"
+    allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
-    <button id="externalBtn" style="margin-top:10px; background:#555; color:white;">
-        ▶ 영상이 보이지 않을 경우 클릭
-    </button>
+    <button id="externalBtn" class="gray">▶ 영상이 보이지 않을 경우</button>
 </div>
 
-<!-- 🚨 피해사례 복원 -->
 <div class="caseBox">
 <b>🚨 실제 피해 사례</b><br><br>
-
-'2026. 4. 3. 피해자 000 / 피해금 1억 원 현금 전달 피해'<br>
-→ 검사 사칭: “특급 사건 수사 중”이라며 자산검수 명목 현금 인출 요구<br><br>
-
-'2026. 4. 5. 피해자 000 / 피해금 3,000만 원 계좌이체 피해'<br>
-→ 대환대출 사칭: 정부지원 대출이라며 법무법인 계좌로 이체 유도
+검찰 사칭 → 1억 원 피해 (현금 전달 요구)<br>
+대출 사기 → 3,000만 원 피해 (계좌이체 유도)
 </div>
-    
-<button id="startBtn" class="start" disabled>진단 시작</button>
+
+<button id="startBtn" class="primary" disabled>진단 시작</button>
 
 </div>
 
@@ -153,25 +164,23 @@ button {
 
 <div id="descBox" class="descBox"></div>
 
-<button id="nextBtn" class="hidden">다음 질문</button>
+<button id="nextBtn" class="hidden primary">다음</button>
 </div>
 
 <!-- RESULT -->
 <div id="resultBox" class="hidden">
-<h2>🚨 진단 결과</h2>
+<h2>진단 결과</h2>
+
 <div id="result"></div>
 
 <div class="progressBox">
-    <div id="progressBar" class="progressBar"></div>
+<div id="progressBar" class="progressBar"></div>
 </div>
 
-<div id="scoreText" class="scoreText"></div>
+<div id="scoreText"></div>
 
-<button onclick="downloadApp()" style="background:#28a745;color:white;">
-📱 악성앱 점검 도구 다운로드
-</button>
-
-<button id="restartBtn">다시 시작</button>
+<button onclick="downloadApp()" class="green">📱 악성앱 점검 도구</button>
+<button id="restartBtn" class="gray">다시 시작</button>
 </div>
 
 </div>
@@ -179,158 +188,140 @@ button {
 
 <script>
 
-let videoWatched = false;
-let index = 0;
-let score = 0;
+/* =====================
+   데이터
+===================== */
 
-const videoBtn = document.getElementById("videoBtn");
-const startBtn = document.getElementById("startBtn");
-const ytFrame = document.getElementById("ytFrame");
-const videoBox = document.getElementById("videoBox");
+let index=0;
+let score=0;
+let videoWatched=false;
 
-const intro = document.getElementById("intro");
-const quiz = document.getElementById("quiz");
-const resultBox = document.getElementById("resultBox");
-
-const questionEl = document.getElementById("question");
-const descBox = document.getElementById("descBox");
-const nextBtn = document.getElementById("nextBtn");
-
-const questions = [
-{ q:"카드 배송 전화를 받았습니까?", choices:["예","아니오"], answer:1, desc:"대표적인 사기 수법입니다.", risk:1 },
-{ q:"명의도용을 언급했습니까?", choices:["예","아니오"], answer:1, desc:"공포심 유발 수법입니다.", risk:3 },
-{ q:"검찰·경찰을 사칭했습니까?", choices:["예","아니오"], answer:1, desc:"기관 사칭은 핵심 패턴입니다.", risk:3 },
-{ q:"사건번호를 언급했습니까?", choices:["예","아니오"], answer:1, desc:"전화로 사건번호를 주지 않습니다.", risk:2 },
-{ q:"비밀 유지 요구를 받았습니까?", choices:["예","아니오"], answer:1, desc:"고립 유도입니다.", risk:3 },
-{ q:"원격제어 앱 설치를 요구했습니까?", choices:["예","아니오"], answer:1, desc:"계좌 탈취 위험입니다.", risk:5 },
-{ q:"금전 송금을 요구했습니까?", choices:["예","아니오"], answer:1, desc:"100% 사기입니다.", risk:5 },
-{ q:"현금 전달을 요구했습니까?", choices:["예","아니오"], answer:1, desc:"매우 위험합니다.", risk:5 },
-{ q:"가족에게 알리지 말라고 했습니까?", choices:["예","아니오"], answer:1, desc:"통제 단계입니다.", risk:4 }
+const questions=[
+{q:"검찰 사칭 전화를 받았습니까?",a:1,r:3},
+{q:"계좌 안전조치를 요구했습니까?",a:1,r:5},
+{q:"원격 앱 설치 요구?",a:1,r:5},
+{q:"현금 전달 요구?",a:1,r:5},
+{q:"가족에게 비밀 요구?",a:1,r:3}
 ];
 
-// 🎥 영상
-videoBtn.onclick = () => {
-    videoBox.style.display = "block";
+/* =====================
+   요소
+===================== */
 
-    ytFrame.src = "";
-    setTimeout(() => {
-        ytFrame.src = "https://www.youtube.com/embed/tV-yM5EWJ3k?autoplay=1&mute=1&rel=0";
-    }, 200);
+const intro=document.getElementById("intro");
+const quiz=document.getElementById("quiz");
+const resultBox=document.getElementById("resultBox");
 
-    videoWatched = true;
-    startBtn.disabled = false;
-    startBtn.classList.add("active");
+const videoBtn=document.getElementById("videoBtn");
+const ytFrame=document.getElementById("ytFrame");
+const videoBox=document.getElementById("videoBox");
+
+const startBtn=document.getElementById("startBtn");
+const nextBtn=document.getElementById("nextBtn");
+
+const questionEl=document.getElementById("question");
+const descBox=document.getElementById("descBox");
+
+/* =====================
+   영상
+===================== */
+
+videoBtn.onclick=()=>{
+    videoBox.style.display="block";
+    ytFrame.src="https://www.youtube.com/embed/tV-yM5EWJ3k?autoplay=1&mute=1";
+    videoWatched=true;
+    startBtn.disabled=false;
 };
 
-// ▶ 외부 영상
-document.getElementById("externalBtn").onclick = () => {
-    window.open("https://youtu.be/tV-yM5EWJ3k", "_blank");
+/* =====================
+   시작
+===================== */
+
+startBtn.onclick=()=>{
+    if(!videoWatched) return alert("영상을 먼저 시청하세요");
+    intro.classList.add("hidden");
+    quiz.classList.remove("hidden");
+    loadQ();
 };
 
-// ▶ 시작
-startBtn.onclick = () => {
-    if(!videoWatched){
-        alert("영상을 먼저 시청해주세요.");
-        return;
-    }
-    intro.style.display = "none";
-    quiz.style.display = "block";
-    loadQuestion();
-};
+function loadQ(){
+    const q=questions[index];
+    questionEl.innerText=q.q;
 
-function loadQuestion(){
-    const q = questions[index];
-    questionEl.innerText = q.q;
+    const c=document.getElementById("choices");
+    c.innerHTML="";
 
-    const choicesDiv = document.getElementById("choices");
-    choicesDiv.innerHTML = "";
-
-    descBox.style.display = "none";
-    nextBtn.classList.add("hidden");
-
-    q.choices.forEach((c,i)=>{
-        let btn = document.createElement("button");
-        btn.innerText = c;
-        btn.className = "choiceBtn";
-        btn.onclick = () => selectAnswer(i);
-        choicesDiv.appendChild(btn);
+    ["예","아니오"].forEach((t,i)=>{
+        let b=document.createElement("button");
+        b.innerText=t;
+        b.className="choiceBtn";
+        b.onclick=()=>answer(i);
+        c.appendChild(b);
     });
+
+    descBox.style.display="none";
+    nextBtn.classList.add("hidden");
 }
 
-function selectAnswer(choice){
-    const q = questions[index];
-
-    if(choice !== q.answer){
-        score += q.risk;
-    }
-
-    descBox.innerText = "💡 " + q.desc;
-    descBox.style.display = "block";
-
+function answer(i){
+    if(i!==questions[index].a) score+=questions[index].r;
+    descBox.innerText="💡 예방 안내: 해당 상황은 사기 가능성이 높습니다.";
+    descBox.style.display="block";
     nextBtn.classList.remove("hidden");
 }
 
-// ▶ 다음
-nextBtn.onclick = () => {
+/* =====================
+   다음
+===================== */
+
+nextBtn.onclick=()=>{
     index++;
-    if(index < questions.length){
-        loadQuestion();
-    } else {
-        showResult();
-    }
+    if(index<questions.length) loadQ();
+    else showResult();
 };
 
-// ▶ 결과
+/* =====================
+   결과
+===================== */
+
 function showResult(){
-    quiz.style.display = "none";
-    resultBox.style.display = "block";
+    quiz.classList.add("hidden");
+    resultBox.classList.remove("hidden");
 
-    let maxScore = 0;
-    questions.forEach(q => maxScore += q.risk);
+    let max=0;
+    questions.forEach(q=>max+=q.r);
 
-    let percent = Math.min((score / maxScore) * 100, 100);
+    let percent=Math.min(score/max*100,100);
 
-    let text = "";
-    const bar = document.getElementById("progressBar");
+    let text="";
+    const bar=document.getElementById("progressBar");
 
-    if(percent >= 70){
-        text = "🚨 매우 위험 (즉시 112 신고)";
+    if(percent>=70){
+        text="🚨 매우 위험 (즉시 112 신고 권장)";
         document.body.classList.add("danger");
-        bar.style.background = "#d9534f";
     }
-    else if(percent >= 40){
-        text = "⚠️ 위험 (주의 필요)";
-        bar.style.background = "#f0ad4e";
+    else if(percent>=40){
+        text="⚠️ 주의 필요";
     }
     else{
-        text = "✅ 비교적 안전";
-        bar.style.background = "#28a745";
+        text="✅ 안전 수준";
     }
 
-    document.getElementById("result").innerText = text;
-    bar.style.width = percent + "%";
-    document.getElementById("scoreText").innerText = "위험 점수: " + score;
+    document.getElementById("result").innerText=text;
+    document.getElementById("scoreText").innerText="위험도: "+percent.toFixed(1)+"%";
+    bar.style.width=percent+"%";
 }
 
-// ▶ 다운로드
+/* =====================
+   기타
+===================== */
+
 function downloadApp(){
-    window.location.href = "http://bit.ly/polm";
+    window.location.href="http://bit.ly/polm";
 }
 
-// ▶ 재시작
-document.getElementById("restartBtn").onclick = () => {
-    index = 0;
-    score = 0;
-    videoWatched = false;
-
-    resultBox.style.display = "none";
-    intro.style.display = "block";
-
-    document.body.classList.remove("danger");
-
-    ytFrame.src = "";
-    startBtn.disabled = true;
-    startBtn.classList.remove("active");
+document.getElementById("restartBtn").onclick=()=>{
+    location.reload();
 };
 
 </script>
