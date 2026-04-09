@@ -370,7 +370,15 @@ function answer(i){
 
     document.getElementById("descBox").innerText = q.desc;
     document.getElementById("descBox").style.display = "block";
+
+    /* 🔥 다음 버튼 지연 활성화 */
+    nextBtn.classList.add("hidden");
+    nextBtn.disabled = true;
+
+    setTimeout(()=>{
     nextBtn.classList.remove("hidden");
+    nextBtn.disabled = false;
+    },1500);
 }
 
 nextBtn.onclick = () => {
