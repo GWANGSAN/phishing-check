@@ -10,7 +10,7 @@ body{
     margin:0;
     font-family:"Noto Sans KR", Arial;
     background:#eef2f6;
-    font-size:20px; /* 👈 노인용 확대 */
+    font-size:20px;
 }
 
 .header{
@@ -19,7 +19,7 @@ body{
     padding:22px;
     text-align:center;
     font-weight:900;
-    font-size:26px; /* 👈 확대 */
+    font-size:26px;
 }
 
 .container{
@@ -43,7 +43,7 @@ button{
     margin-top:12px;
     border:none;
     border-radius:12px;
-    font-size:20px; /* 👈 확대 */
+    font-size:20px;
     cursor:pointer;
 }
 
@@ -128,7 +128,7 @@ button{
 
 <body>
 
-<div class="header">🚔 광주광산경찰서 피싱범죄수사팀</div>
+<div class="header">🚔 보이스피싱 예방 진단 시스템</div>
 
 <div class="container">
 <div class="card">
@@ -136,27 +136,17 @@ button{
 <!-- INTRO -->
 <div id="intro">
 
-<h2>📢 보이스피싱 진단 안내</h2>
+<h2>📢 보이스피싱 진단 시작</h2>
 
-<p style="font-size:20px;">
-이 프로그램은 보이스피싱 위험도를 간단히 진단합니다.<br>
-영상을 시청후 진단을 진행해 주세요.
-</p>
+<p>의심 전화 여부를 체크하여 위험도를 분석합니다.</p>
 
 <button class="video" id="videoBtn">▶ 영상 시청</button>
 
 <div class="caseBox">
 <div class="caseTitle">🚨 실제 피해 사례</div>
 
-<div class="caseItem">
-<b>검찰 사칭</b><br>
-2026. 4. 2. 1억 원 피해/현금 전달 요구/자산검수
-</div>
-
-<div class="caseItem">
-<b>대출 사기</b><br>
-2026. 4. 1. 3,000만 원 피해/계좌이체 유도/약정위반
-</div>
+<div class="caseItem">검찰 사칭 - 1억 원 피해</div>
+<div class="caseItem">대출 사기 - 3,000만 원 피해</div>
 </div>
 
 <button class="primary" id="startBtn">진단 시작</button>
@@ -184,7 +174,11 @@ button{
 
 <div id="preventionMsg"></div>
 
-<button class="green">피해예방 안내</button>
+<!-- 🔥 변경된 버튼 -->
+<button class="green" onclick="downloadTool()">
+📱 악성어플 추출프로그램
+</button>
+
 <button class="gray" onclick="location.reload()">다시 시작</button>
 
 </div>
@@ -195,37 +189,30 @@ button{
 <script>
 
 /* =========================
-   질문 (수정/추가/삭제 가능 구조)
+   질문
 ========================= */
 
 const questions = [
 {
- q:"카드 배송 또는 카드 발급 관련 전화를 받은 적이 있습니까?",
+ q:"카드 배송 또는 카드 발급 전화를 받은 적이 있습니까?",
  choices:["예","아니오"],
  answer:1,
  risk:1,
- desc:"카드 사칭은 대표적인 보이스피싱입니다."
-},
-{
- q:"본인이 신청하지 않은 카드가 발급되었다고 들었습니까?",
- choices:["예","아니오"],
- answer:1,
- risk:2,
- desc:"명의도용 사기입니다."
+ desc:"카드 사칭은 대표적 보이스피싱입니다."
 },
 {
  q:"금융기관 또는 검찰을 사칭한 전화를 받았습니까?",
  choices:["예","아니오"],
  answer:1,
  risk:3,
- desc:"기관 사칭 수법입니다."
+ desc:"기관 사칭은 매우 위험합니다."
 },
 {
  q:"현금 전달 또는 계좌이체 요구를 받았습니까?",
  choices:["예","아니오"],
  answer:1,
  risk:5,
- desc:"즉시 사기 의심 상황입니다."
+ desc:"즉시 사기 상황입니다."
 }
 ];
 
@@ -236,6 +223,7 @@ const intro = document.getElementById("intro");
 const quiz = document.getElementById("quiz");
 const nextBtn = document.getElementById("nextBtn");
 
+/* 시작 */
 document.getElementById("startBtn").onclick = () => {
     intro.classList.add("hidden");
     quiz.classList.remove("hidden");
@@ -244,7 +232,8 @@ document.getElementById("startBtn").onclick = () => {
     loadQ();
 };
 
-function loadQ() {
+/* 질문 로딩 */
+function loadQ(){
     const q = questions[index];
 
     document.getElementById("question").innerText = q.q;
@@ -252,7 +241,7 @@ function loadQ() {
     const c = document.getElementById("choices");
     c.innerHTML = "";
 
-    q.choices.forEach((t, i) => {
+    q.choices.forEach((t,i)=>{
         let b = document.createElement("button");
         b.className = "choiceBtn";
         b.innerText = t;
@@ -264,58 +253,72 @@ function loadQ() {
     nextBtn.classList.add("hidden");
 }
 
-function answer(i) {
+/* 답변 처리 */
+function answer(i){
     const q = questions[index];
 
-    if (i !== q.answer) score += q.risk;
+    if(i !== q.answer) score += q.risk;
 
-    let d = document.getElementById("descBox");
-    d.innerText = q.desc;
-    d.style.display = "block";
+    document.getElementById("descBox").innerText = q.desc;
+    document.getElementById("descBox").style.display = "block";
 
     nextBtn.classList.remove("hidden");
 }
 
+/* 다음 */
 nextBtn.onclick = () => {
     index++;
-    if (index < questions.length) {
+    if(index < questions.length){
         loadQ();
     } else {
         result();
     }
 };
 
-function result() {
+/* 결과 */
+function result(){
 
     quiz.classList.add("hidden");
     document.getElementById("resultBox").classList.remove("hidden");
 
-    let max = questions.reduce((a, b) => a + b.risk, 0);
+    let max = questions.reduce((a,b)=>a+b.risk,0);
     let percent = (score / max) * 100;
 
     document.getElementById("progressBar").style.width = percent + "%";
 
-    let msg = "";
-
-    if (percent >= 70) msg = "🚨 매우 위험";
-    else if (percent >= 40) msg = "⚠️ 주의";
-    else msg = "✅ 안전";
+    let msg =
+        percent >= 70 ? "🚨 매우 위험"
+        : percent >= 40 ? "⚠️ 주의"
+        : "✅ 안전";
 
     document.getElementById("result").innerText = msg;
     document.getElementById("scoreText").innerText = "위험도: " + percent.toFixed(1) + "%";
 
-    /* 🚨 마지막 경고 문구 */
-    let p = "";
+    document.getElementById("preventionMsg").innerHTML =
+        percent >= 70
+        ? "🚨 즉시 112 신고 / 송금 절대 금지"
+        : percent >= 40
+        ? "⚠️ 의심 상황 / 가족 확인 필요"
+        : "✅ 안전하지만 지속적 주의 필요";
+}
 
-    if (percent >= 70) {
-        p = "🚨 즉시 신고 필요 (112 / 182)<br>금융기관은 절대 돈 요구 안함<br><b>즉시 통화 종료하세요</b>";
-    } else if (percent >= 40) {
-        p = "⚠️ 의심 상황입니다<br>가족 또는 기관 직접 확인 필요";
-    } else {
-        p = "✅ 안전 수준입니다<br>하지만 보이스피싱은 계속 증가 중입니다";
-    }
+/* 영상 기능 */
+document.getElementById("videoBtn").onclick = function(){
+    window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
+};
 
-    document.getElementById("preventionMsg").innerHTML = p;
+/* 🔥 다운로드 기능 */
+function downloadTool(){
+
+    const url = "https://your-domain.com/antiphishing-tool.apk";
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "악성어플추출프로그램.apk";
+
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 }
 
 </script>
