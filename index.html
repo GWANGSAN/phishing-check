@@ -54,7 +54,6 @@ button {
     display:none;
 }
 
-/* 점수 바 */
 .progressBox {
     margin-top:20px;
     background:#ddd;
@@ -76,7 +75,6 @@ button {
 
 .hidden { display:none; }
 
-/* 위험 시 화면 */
 .danger {
     background:#2b0000 !important;
     color:white;
@@ -91,9 +89,8 @@ button {
 <div class="container">
 <div class="card">
 
-<!-- 첫 화면 -->
+<!-- INTRO -->
 <div id="intro">
-
 <h2>보이스피싱 정밀진단</h2>
 
 <p>
@@ -102,20 +99,23 @@ button {
 </p>
 
 <button id="videoBtn" class="video">🎥 예방 영상 시청</button>
-    
+
 <div id="videoBox" style="display:none; margin-top:15px;">
-<iframe id="ytFrame" width="100%" height="200" src="" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-</iframe> <button style="margin-top:10px; background:#555; color:white;" id="externalBtn"> ▶ 영상이 보이지 않을 경우 클릭 </button> </div>    
-    
-<div id="videoBox" style="display:none; margin-top:15px;">
-<iframe id="ytFrame" width="100%" height="200" src="" allowfullscreen></iframe>
+    <iframe id="ytFrame" width="100%" height="200"
+        src=""
+        frameborder="0"
+        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen></iframe>
+
+    <button id="externalBtn" style="margin-top:10px; background:#555; color:white;">
+        ▶ 영상이 보이지 않을 경우 클릭
+    </button>
 </div>
 
 <button id="startBtn" class="start" disabled>진단 시작</button>
-
 </div>
 
-<!-- 퀴즈 -->
+<!-- QUIZ -->
 <div id="quiz" class="hidden">
 <div id="question"></div>
 <div id="choices"></div>
@@ -125,7 +125,7 @@ button {
 <button id="nextBtn" class="hidden">다음 질문</button>
 </div>
 
-<!-- 결과 -->
+<!-- RESULT -->
 <div id="resultBox" class="hidden">
 <h2>🚨 진단 결과</h2>
 <div id="result"></div>
@@ -137,7 +137,7 @@ button {
 <div id="scoreText" class="scoreText"></div>
 
 <button onclick="downloadApp()" style="background:#28a745;color:white;">
-📱 악성어플 추출프로그램 다운로드
+📱 악성앱 점검 도구 다운로드
 </button>
 
 <button id="restartBtn">다시 시작</button>
@@ -148,326 +148,151 @@ button {
 
 <script>
 
-let videoWatched=false;
-let index=0;
-let score=0;
+let videoWatched = false;
+let index = 0;
+let score = 0;
 
-const videoBtn=document.getElementById("videoBtn");
-const startBtn=document.getElementById("startBtn");
-const ytFrame=document.getElementById("ytFrame");
+const videoBtn = document.getElementById("videoBtn");
+const startBtn = document.getElementById("startBtn");
+const ytFrame = document.getElementById("ytFrame");
+const videoBox = document.getElementById("videoBox");
 
-const intro=document.getElementById("intro");
-const quiz=document.getElementById("quiz");
-const resultBox=document.getElementById("resultBox");
+const intro = document.getElementById("intro");
+const quiz = document.getElementById("quiz");
+const resultBox = document.getElementById("resultBox");
 
-const questionEl=document.getElementById("question");
-const resultEl=document.getElementById("result");
-const descBox=document.getElementById("descBox");
-const nextBtn=document.getElementById("nextBtn");
+const questionEl = document.getElementById("question");
+const resultEl = document.getElementById("result");
+const descBox = document.getElementById("descBox");
+const nextBtn = document.getElementById("nextBtn");
 
-const questions=[
-{ q:"카드 배송 또는 카드 발급 관련 전화를 받은 적이 있습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"카드 배송 사칭은 대표적인 보이스피싱 수법입니다. 본인이 신청하지 않았다면 100% 의심해야 합니다.",
-risk:1 },
-
-{ q:"본인이 신청하지 않은 카드가 발급되었다고 들었습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"명의도용을 빌미로 공포심을 유발하는 수법입니다. 실제 카드사는 이런 방식으로 연락하지 않습니다.",
-risk:2 },
-
-{ q:"명의도용 또는 범죄 연루를 언급했습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"검찰·경찰 사칭의 핵심 패턴입니다. 공포를 이용해 통제하려는 수법입니다.",
-risk:3 },
-
-{ q:"금융감독원, 검찰, 경찰 등 공공기관을 사칭했습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"공공기관 사칭은 보이스피싱의 가장 대표적인 특징입니다.",
-risk:3 },
-
-{ q:"사건번호 또는 수사를 언급했습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"실제 수사는 전화로 통보하지 않으며 사건번호를 먼저 알려주지 않습니다.",
-risk:2 },
-
-{ q:"구속, 범죄 연루 등의 말을 했습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"공포를 조성해 판단력을 흐리게 만드는 전형적인 수법입니다.",
-risk:3 },
-
-{ q:"다른 사람에게 알리지 말라고 했습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"외부 도움을 차단하는 것은 100% 사기 패턴입니다.",
-risk:3 },
-
-{ q:"특급사건, 극비수사, 보완수사, 약식수사에 대해 들은 적이 있습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"'극비'라는 단어는 피해자를 고립시키기 위한 장치입니다.",
-risk:2 },
-
-{ q:"통화 내용을 비밀로 하라고 했습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"정상적인 기관은 절대 비밀을 요구하지 않습니다.",
-risk:3 },
-
-{ q:"계속 통화를 유지하게 했습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"판단 시간을 주지 않기 위한 통제 전략입니다.",
-risk:2 },
-
-{ q:"매시간마다 행동을 보고하는 -정시보고- 지시를 받았습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"완전히 통제된 상태로 만들기 위한 고위험 신호입니다.",
-risk:3 },
-
-{ q:"행동을 보고하라고 했습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"피해자를 통제하는 단계로 이미 위험 수준이 높습니다.",
-risk:2 },
-
-{ q:"휴대전화 점검을 이유로 앱 설치를 요구했습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"악성앱 설치 유도는 핵심 범죄 단계입니다.",
-risk:5 },
-
-{ q:"애니데스크, 팀뷰어 등 원격제어앱을 사용한 적이 있습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"원격제어는 계좌 탈취로 직결되는 매우 위험한 단계입니다.",
-risk:5 },
-
-{ q:"원격제어 또는 화면 공유를 요구했습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"금융정보 탈취 목적입니다. 즉시 중단해야 합니다.",
-risk:5 },
-
-{ q:"설치 후 휴대전화가 이상하게 작동했습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"이미 악성앱 감염 가능성이 매우 높습니다.",
-risk:5 },
-
-{ q:"텔레그램, 라인 등 대화어플을 설치한 적이 있습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"수사기관은 메신저로 지시하지 않습니다.",
-risk:3 },
-
-{ q:"수사기관은 대화어플로 수사지시를 하지 않는 사실을 알고 있습니까?",
-choices:["알고 있다","모른다"],
-answer:0,
-desc:"모른다면 사기 가능성에 쉽게 노출됩니다.",
-risk:2 },
-
-{ q:"금융감독원(1332) 또는 검찰(1301)에 전화하라고 했습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"전화 가로채기 수법으로 연결됩니다.",
-risk:4 },
-
-{ q:"고객센터 전화 후 즉시 상담사가 연결되었습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"정상 기관은 대기 없이 바로 연결되지 않습니다.",
-risk:3 },
-
-{ q:"고객센터는 상담사가 즉시 연결되지 않는 사실을 알고 있습니까?",
-choices:["알고 있다","모른다"],
-answer:0,
-desc:"이걸 모르면 사기 전화에 속기 쉽습니다.",
-risk:2 },
-
-{ q:"공식기관처럼 응대했습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"사기범은 실제 기관처럼 연기합니다.",
-risk:2 },
-
-{ q:"극비 사건이라며 보안을 강조했습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"고립 유도 → 사기 핵심 패턴입니다.",
-risk:3 },
-
-{ q:"주변 사람을 믿지 말라고 했습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"완전한 통제 단계입니다.",
-risk:4 },
-
-{ q:"감시당한다고 느꼈습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"심리적 압박 상태 → 매우 위험",
-risk:4 },
-
-{ q:"현금 인출 또는 송금을 요구했습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"금전 요구 = 100% 사기",
-risk:5 },
-
-{ q:"출금 목적에 대해 거짓말을 지시했습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"범죄 가담 단계입니다.",
-risk:5 },
-
-{ q:"현금을 전달하라고 했습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"직접 전달은 고위험 범죄입니다.",
-risk:5 },
-
-{ q:"가족 또는 주변 사람에게 공유했습니까?",
-choices:["공유했다","공유하지 않았다"],
-answer:0,
-desc:"공유하지 않았다면 이미 통제 상태입니다.",
-risk:3 },
-
-{ q:"명의도용 사건의 경우 피해자임을 알고 있습니까?",
-choices:["알고 있다","모른다"],
-answer:0,
-desc:"피해자를 피의자로 속이는 수법입니다.",
-risk:2 },
-
-{ q:"저금리 대환대출 전화를 받은 적이 있습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"대출 사칭도 매우 흔한 수법입니다.",
-risk:2 },
-
-{ q:"대출약정위반, 보증금 관련 내용을 들었습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"가짜 금융용어로 속이는 수법입니다.",
-risk:3 },
-
-{ q:"기존 대출 상환 요구를 받았습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"대출 사기의 핵심 패턴입니다.",
-risk:4 },
-
-{ q:"현금 상환을 요구했습니까?",
-choices:["예","아니오"],
-answer:1,
-desc:"현금 요구 = 100% 사기입니다.",
-risk:5 }
+const questions = [
+{ q:"카드 배송 또는 카드 발급 관련 전화를 받은 적이 있습니까?", choices:["예","아니오"], answer:1, desc:"카드 배송 사칭은 대표적인 보이스피싱 수법입니다.", risk:1 },
+{ q:"명의도용을 언급했습니까?", choices:["예","아니오"], answer:1, desc:"공포심 유발 방식입니다.", risk:3 },
+{ q:"공공기관을 사칭했습니까?", choices:["예","아니오"], answer:1, desc:"대표적인 사기 패턴입니다.", risk:3 },
+{ q:"사건번호를 언급했습니까?", choices:["예","아니오"], answer:1, desc:"실제 기관은 전화로 사건번호를 먼저 안내하지 않습니다.", risk:2 },
+{ q:"비밀유지를 요구했습니까?", choices:["예","아니오"], answer:1, desc:"외부 차단은 사기 특징입니다.", risk:3 },
+{ q:"원격제어 앱 설치를 요구했습니까?", choices:["예","아니오"], answer:1, desc:"계좌 탈취로 이어지는 매우 위험한 단계입니다.", risk:5 },
+{ q:"금전 송금을 요구했습니까?", choices:["예","아니오"], answer:1, desc:"금전 요구는 100% 사기입니다.", risk:5 },
+{ q:"현금 전달을 요구했습니까?", choices:["예","아니오"], answer:1, desc:"직접 전달도 매우 위험합니다.", risk:5 },
+{ q:"가족에게 알리지 말라고 했습니까?", choices:["예","아니오"], answer:1, desc:"고립 유도는 전형적인 수법입니다.", risk:4 }
 ];
 
-
-videoBtn.onclick=()=>{
-    ytFrame.src="https://www.youtube.com/embed/tV-yM5EWJ3k?autoplay=1";
-    videoWatched=true;
-    startBtn.disabled=false;
+// 영상
+videoBtn.onclick = () => {
+    videoBox.style.display = "block";
+    ytFrame.src = "https://www.youtube.com/embed/tV-yM5EWJ3k?autoplay=1";
+    videoWatched = true;
+    startBtn.disabled = false;
     startBtn.classList.add("active");
 };
 
-startBtn.onclick=()=>{
+// 외부 영상
+document.getElementById("externalBtn").onclick = () => {
+    window.open("https://www.youtube.com/watch?v=tV-yM5EWJ3k", "_blank");
+};
+
+// 시작
+startBtn.onclick = () => {
     if(!videoWatched){
-        alert("영상 먼저 시청");
+        alert("영상 먼저 시청하세요.");
         return;
     }
-    intro.style.display="none";
-    quiz.style.display="block";
+    intro.style.display = "none";
+    quiz.style.display = "block";
     loadQuestion();
 };
 
 function loadQuestion(){
-    const q=questions[index];
-    questionEl.innerText=q.q;
+    const q = questions[index];
+    questionEl.innerText = q.q;
 
-    const choicesDiv=document.getElementById("choices");
-    choicesDiv.innerHTML="";
+    const choicesDiv = document.getElementById("choices");
+    choicesDiv.innerHTML = "";
 
-    descBox.style.display="none";
+    descBox.style.display = "none";
     nextBtn.classList.add("hidden");
 
     q.choices.forEach((c,i)=>{
-        let btn=document.createElement("button");
-        btn.innerText=c;
-        btn.className="choiceBtn";
-        btn.onclick=()=>selectAnswer(i);
+        let btn = document.createElement("button");
+        btn.innerText = c;
+        btn.className = "choiceBtn";
+        btn.onclick = () => selectAnswer(i);
         choicesDiv.appendChild(btn);
     });
 }
 
 function selectAnswer(choice){
-    const q=questions[index];
+    const q = questions[index];
 
-    if(choice!==q.answer){
-        score+=q.risk;
+    if(choice !== q.answer){
+        score += q.risk;
     }
 
-    descBox.innerText="💡 "+q.desc;
-    descBox.style.display="block";
+    descBox.innerText = "💡 " + q.desc;
+    descBox.style.display = "block";
 
     nextBtn.classList.remove("hidden");
 }
 
-nextBtn.onclick=()=>{
+nextBtn.onclick = () => {
     index++;
-    if(index<questions.length){
+    if(index < questions.length){
         loadQuestion();
-    }else{
+    } else {
         showResult();
     }
 };
 
 function showResult(){
-    quiz.style.display="none";
-    resultBox.style.display="block";
+    quiz.style.display = "none";
+    resultBox.style.display = "block";
 
-    let text="";
     let maxScore = 0;
     questions.forEach(q => maxScore += q.risk);
 
     let percent = Math.min((score / maxScore) * 100, 100);
 
+    let text = "";
+
+    const bar = document.getElementById("progressBar");
+
     if(percent >= 70){
-    text="🚨 매우 위험\n즉시 112 신고";
-    document.body.classList.add("danger");
-}
-    else if(percent >= 40){
-    text="⚠️ 위험\n보이스피싱 가능성 높음";
-}
-    else if(percent >= 20){
-    text="⚠️ 주의\n의심 정황 존재";
-}
-    else{
-    text="✅ 비교적 안전";
+        text = "🚨 매우 위험 - 즉시 112 신고";
+        document.body.classList.add("danger");
+        bar.style.background = "#d9534f";
+    } else if(percent >= 40){
+        text = "⚠️ 위험 - 보이스피싱 가능성 높음";
+        bar.style.background = "#f0ad4e";
+    } else {
+        text = "✅ 비교적 안전";
+        bar.style.background = "#28a745";
+    }
+
+    resultEl.innerText = text;
+    bar.style.width = percent + "%";
+    document.getElementById("scoreText").innerText = "위험 점수: " + score + "점";
 }
 
-    resultEl.innerText=text;
-    document.getElementById("progressBar").style.width=percent+"%";
-    document.getElementById("scoreText").innerText="위험 점수: "+score+"점";
-}
-
+// 다운로드
 function downloadApp(){
-    window.location.href="http://bit.ly/polm";
+    window.location.href = "https://polm.example.com"; // 실제 도메인 권장
 }
 
-document.getElementById("restartBtn").onclick=()=>{
-    index=0; score=0;
-    resultBox.style.display="none";
-    intro.style.display="block";
+// 재시작
+document.getElementById("restartBtn").onclick = () => {
+    index = 0;
+    score = 0;
+    videoWatched = false;
+
+    resultBox.style.display = "none";
+    intro.style.display = "block";
+
     document.body.classList.remove("danger");
+
+    ytFrame.src = "";
+    startBtn.disabled = true;
+    startBtn.classList.remove("active");
 };
 
 </script>
