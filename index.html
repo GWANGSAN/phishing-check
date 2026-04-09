@@ -65,13 +65,47 @@ button{
 }
 
 .caseItem{
-    background:#fff;
-    padding:12px;
-    border-radius:8px;
-    margin-top:10px;
-    font-size:18px;
+    padding:16px;
+    border-radius:12px;
+    margin-top:12px;
     border:1px solid #eee;
     line-height:1.5;
+    transition:0.2s;
+}
+
+/* 🔥 hover 효과 */
+.caseItem:active{
+    transform:scale(0.97);
+}
+
+/* 🔥 유형별 색상 */
+.caseItem.danger{
+    background:#ffebee;
+    border-left:6px solid #c62828;
+}
+
+.caseItem.warning{
+    background:#fff8e1;
+    border-left:6px solid #ff9800;
+}
+
+/* 🔥 텍스트 스타일 */
+.caseTitle{
+    font-size:20px;
+    font-weight:900;
+    margin-bottom:6px;
+}
+
+.caseDate{
+    font-size:16px;
+    color:#666;
+}
+
+.caseMoney{
+    font-size:20px;
+    font-weight:900;
+    margin-top:6px;
+    color:#c62828;
 }
 
 .hidden{display:none;}
@@ -217,14 +251,16 @@ button{
 <h2>🚨 실제 피해사례</h2>
 
 <div class="caseBox">
-    <div class="caseItem">
-        1. 검찰사칭 피해 - 자산검수<br>
-        2026. 4. 2. 피해금 1억 원
+    <div class="caseItem danger">
+        <div class="caseTitle">🚨 1. 검찰사칭 피해 - 자산검수</div>
+        <div class="caseDate">2026. 4. 2.</div>
+        <div class="caseMoney">💸 피해금 1억 원</div>
     </div>
 
-    <div class="caseItem">
-        2. 대출사칭 피해 - 계약위반, 보증금<br>
-        2026. 4. 1. 피해금 3,000만 원
+    <div class="caseItem warning">
+        <div class="caseTitle">⚠️ 2. 대출사칭 피해 - 계약위반, 보증금</div>
+        <div class="caseDate">2026. 4. 1.</div>
+        <div class="caseMoney">💸 피해금 3,000만 원</div>
     </div>
 </div>
 
