@@ -287,8 +287,21 @@ const videoBox = document.getElementById("videoBox");
 const startBtn = document.getElementById("startBtn");
 
 document.getElementById("videoBtn").onclick = function(){
+
     videoBox.style.display = "block";
-    ytFrame.src = "https://www.youtube.com/embed/tV-yM5EWJ3k?autoplay=1&mute=1&rel=0";
+
+    ytFrame.src = "";
+    setTimeout(()=>{
+        ytFrame.src = "https://www.youtube.com/embed/tV-yM5EWJ3k?autoplay=1&mute=1&rel=0";
+    },200);
+
+    startBtn.disabled = true;
+    startBtn.innerText = "영상 시청 중... (30초 후 시작 가능)";
+
+    setTimeout(()=>{
+        startBtn.disabled = false;
+        startBtn.innerText = "진단 시작";
+    },30000);
 };
 
 document.getElementById("externalBtn").onclick = function(){
