@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#002b5c">
 <title>보이스피싱 예방 진단 시스템</title>
 
 <style>
@@ -11,6 +12,7 @@ body{
     font-family:"Noto Sans KR", Arial;
     background:#eef2f6;
     font-size:20px;
+    -webkit-text-size-adjust:none;
 }
 
 .header{
@@ -45,6 +47,7 @@ button{
     border-radius:12px;
     font-size:20px;
     cursor:pointer;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .primary{background:#002b5c;color:white;}
@@ -66,7 +69,7 @@ button{
     padding:12px;
     border-radius:8px;
     margin-top:10px;
-    font-size:19px;
+    font-size:18px;
     border:1px solid #eee;
     line-height:1.5;
 }
@@ -91,11 +94,6 @@ button{
     background:#0d47a1;
 }
 
-#nextBtn{
-    background:#ff9800;
-    font-weight:900;
-}
-
 .descBox{
     margin-top:10px;
     padding:18px;
@@ -104,6 +102,11 @@ button{
     border-radius:10px;
     font-size:20px;
     font-weight:700;
+}
+
+#nextBtn{
+    background:#ff9800;
+    font-weight:900;
 }
 
 .progressBox{
@@ -119,15 +122,21 @@ button{
     transition:0.3s;
 }
 
-/* 결과 강조 */
+#preventionMsg{
+    margin-top:14px;
+    padding:14px;
+    background:#eef6ff;
+    border-radius:10px;
+    font-size:18px;
+}
+
+/* 🔥 결과 시인성 추가 */
 #result{
     font-size:32px;
     font-weight:900;
     text-align:center;
-    margin-top:10px;
 }
 
-/* 위험 항목 박스 */
 #detailResult{
     margin-top:18px;
     padding:16px;
@@ -135,7 +144,6 @@ button{
     line-height:1.6;
 }
 
-/* 상태별 색상 */
 .safeBox{
     background:#e8f5e9;
     border-left:6px solid #2e7d32;
@@ -149,14 +157,6 @@ button{
 .dangerBox{
     background:#ffebee;
     border-left:6px solid #c62828;
-}
-
-#preventionMsg{
-    margin-top:14px;
-    padding:14px;
-    background:#eef6ff;
-    border-radius:10px;
-    font-size:18px;
 }
 </style>
 </head>
@@ -231,13 +231,8 @@ button{
 
 <h2>결과</h2>
 
-<p style="text-align:center; font-weight:700;">
-※ 실제 범죄 패턴 기반 진단 결과입니다
-</p>
-
 <div id="result"></div>
 <div id="scoreText"></div>
-
 <div id="preventionMsg"></div>
 <div id="detailResult"></div>
 
@@ -254,6 +249,7 @@ button{
 
 <script>
 
+/* 🔥 기존 questions 그대로 유지 */
 const questions = [
 { q:"카드 배송 또는 카드 발급 관련 전화를 받은 적이 있습니까?", choices:["예","아니오"], answer:1, desc:"카드 배송 사칭은 대표적인 보이스피싱 수법입니다. 본인이 신청하지 않았다면 100% 의심해야 합니다.", risk:1 },
 { q:"본인이 신청하지 않은 카드가 발급되었다고 들었습니까?", choices:["예","아니오"], answer:1, desc:"명의도용을 빌미로 공포심을 유발하는 수법입니다. 실제 카드사는 이런 방식으로 연락하지 않습니다.", risk:2 },
@@ -287,6 +283,7 @@ const intro = document.getElementById("intro");
 const quiz = document.getElementById("quiz");
 const caseScreen = document.getElementById("caseScreen");
 const nextBtn = document.getElementById("nextBtn");
+
 const ytFrame = document.getElementById("ytFrame");
 const videoBox = document.getElementById("videoBox");
 const startBtn = document.getElementById("startBtn");
@@ -318,6 +315,7 @@ document.getElementById("caseNextBtn").onclick = () => {
 function loadQ(){
     const q = questions[index];
     document.getElementById("question").innerText = q.q;
+
     const c = document.getElementById("choices");
     c.innerHTML = "";
 
@@ -397,6 +395,8 @@ function result(){
     } else {
         detailBox.className = "safeBox";
     }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function downloadTool(){
