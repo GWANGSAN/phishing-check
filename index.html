@@ -254,19 +254,19 @@ button{
 <div class="caseBox">
     <div class="caseItem danger">
         <div class="caseTitle">2025년 광주청 피해현황</div>
-        <div class="caseDate">474건 피해금 279억 원</div>
+        <div class="caseMoney">💸 피해금 279억 원</div>
     </div>
     
     <div class="caseItem danger">
         <div class="caseTitle">1. 검찰사칭 피해 - 자산검수</div>
-        <div class="caseDate">2026. 4. 2.</div>
+        <div class="caseDate">2026. 4.</div>
         <div class="caseMoney">💸 피해금 1억 원</div>
     </div>
 
     <div class="caseItem warning">
         <div class="caseTitle">2. 대출사칭 피해 - 계약위반</div>
-        <div class="caseDate">2026. 4. 1.</div>
-        <div class="caseMoney">💸 피해금 3,000만 원</div>
+        <div class="caseDate">2026. 2.</div>
+        <div class="caseMoney">💸 피해금 1,600만 원</div>
     </div>
 
 </div>
@@ -304,7 +304,7 @@ button{
 
 /* 🔥 기존 questions 그대로 유지 */
 const questions = [
-{ q:"카드 배송 또는 본인이 신청하지 않은 카드 발급 관련 전화를 받은 적이 있습니까?", choices:["예","아니오"], answer:1, desc:"카드 배송 사칭은 대표적인 보이스피싱 수법입니다. 본인이 신청하지 않았다면 100% 의심해야 합니다.", risk:4 },
+{ q:"카드 배송 또는 본인이 신청하지 않은 카드 발급 관련 전화를 받은 적이 있습니까?", choices:["예","아니오"], answer:1, desc:"카드 배송 사칭은 대표적인 보이스피싱 수법입니다. 본인이 신청하지 않았다면 100% 의심해야 합니다.", risk:3 },
 { q:"명의도용 또는 범죄 연루, 구속수사, 특극사건, 극비수사, 약식수사를 언급했습니까?", choices:["예","아니오"], answer:1, desc:"공포를 조성하는 검찰·경찰 사칭의 핵심 패턴입니다. 명의도용 사건의 경우 명의도용된 자는 피의자가 아닌 피해자입니다.", risk:4 },
 { q:"휴대전화 점검을 이유로 앱 설치를 요구했습니까?", choices:["예","아니오"], answer:1, desc:"원격제어앱, 악성앱 설치 유도는 핵심 범죄 단계입니다.", risk:5 },
 { q:"금융감독원(1332) 또는 검찰(1301)에 전화하라고 했습니까?", choices:["예","아니오"], answer:1, desc:"악성어플을 통한 전화 가로채기 수법으로 보이스피싱범과 연결됩니다.", risk:5 },
