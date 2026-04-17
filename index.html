@@ -24,8 +24,11 @@ body {
     overflow-wrap: break-word;
 }
 
+/* ✨ 개선점 4. 상단 헤더 글래스모피즘(투명 블러) 적용 */
 .header { 
-    background: var(--primary-color); 
+    background: rgba(0, 43, 92, 0.85); /* 약간의 투명도 */
+    backdrop-filter: blur(10px); /* 블러 효과 */
+    -webkit-backdrop-filter: blur(10px);
     color: white; 
     padding: 15px 10px; 
     text-align: center; 
@@ -69,6 +72,18 @@ body {
     position: relative;
 }
 
+/* ✨ 개선점 1. 부드러운 화면 전환을 위한 Fade-in 클래스 설정 */
+.screen { display: none; }
+.screen.active {
+    display: flex;
+    animation: fadeInUp 0.4s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 h2 { color: var(--primary-color); font-size: 1.8rem; margin-bottom: 20px; text-align: center; font-weight: 900; line-height: 1.2; }
 #question { font-size: 1.6rem; font-weight: 900; margin-bottom: 20px; color: var(--primary-color); text-align: center; padding: 0 5px; }
 p { font-size: 1.3rem; margin-bottom: 1rem; color: #000; font-weight: 700; text-align: center; }
@@ -87,6 +102,16 @@ button {
     justify-content: center;
     text-align: center;
     line-height: 1.2;
+    /* ✨ 개선점 2. 버튼 터치 피드백을 위한 트랜지션 추가 */
+    transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.2s;
+}
+
+/* ✨ 개선점 2. 버튼 터치 시 살짝 눌리는 효과 */
+button:active {
+    transform: scale(0.96);
+}
+button:disabled {
+    transform: none; /* 비활성화 상태에서는 눌림 효과 방지 */
 }
 
 .primary { background: var(--primary-color); color: white; }
@@ -154,7 +179,9 @@ button {
 .report-q { font-size: 1.1rem; color: #333; font-weight: 800; margin-bottom: 8px; }
 .report-desc { font-size: 1.2rem; color: var(--danger-color); font-weight: 900; background: #fff3f3; padding: 10px; border-radius: 10px; border-left: 5px solid var(--danger-color); }
 .share-btn { background: #fee500; color: #3c1e1e; border: 2px solid #3c1e1e; margin-top: 15px; }
-.hidden { display: none; }
+
+/* 컴포넌트 내부 숨김 처리를 위한 유틸리티 클래스 */
+.hidden { display: none !important; }
 .blink { animation: blink 1s infinite; }
 @keyframes blink { 50% { opacity: 0.5; } }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(211,47,47, 0.7); } 70% { box-shadow: 0 0 0 12px rgba(211,47,47, 0); } 100% { box-shadow: 0 0 0 0 rgba(211,47,47, 0); } }
@@ -169,7 +196,7 @@ button {
 </div>
 
 <div class="container">
-    <div class="card screen" id="intro">
+    <div class="card screen active" id="intro">
         <h2>보이스피싱 진단</h2>
         <p>실제 수사 데이터를 기반으로<br>나의 위험도를 점검합니다.</p>
         <button class="video-btn" id="videoBtn">▶ 교육 영상 시청 (30초 대기)</button>
@@ -182,17 +209,17 @@ button {
         <button id="startBtn" class="primary" style="margin-top:15px;" disabled>안내 영상을 시청해 주세요</button>
     </div>
 
-    <div class="card hidden screen" id="caseScreen">
+    <div class="card screen" id="caseScreen">
         <div class="case-title-bar"><span class="siren-icon">🚨</span><h2>실제 피해 사례</h2></div>
         <div class="caseBox">
             <div class="caseItem-v2"><p>2025년 광주청 피해액</p><div class="caseMoney-v2">총 279억 원</div></div>
             <div class="caseItem-v2"><p>검찰사칭 - 자산검수(26년 4월)</p><div class="caseMoney-v2">피해금 1억 원</div></div>
             <div class="caseItem-v2"><p>대출사칭 - 계약위반(26년 2월)</p><div class="caseMoney-v2">피해금 1,600만 원</div></div>
         </div>
-        <button id="caseNextBtn" class="primary Video-btn blink" style="margin-top:20px;">내 상황 진단하기 (클릭)</button>
+        <button id="caseNextBtn" class="primary video-btn blink" style="margin-top:20px;">내 상황 진단하기 (클릭)</button>
     </div>
 
-    <div class="card hidden screen" id="quiz">
+    <div class="card screen" id="quiz">
         <div id="question"></div>
         <div id="choices"></div>
         <div id="dynamicVideoArea"></div>
@@ -201,7 +228,7 @@ button {
         <button id="nextBtn" class="primary hidden">다음 질문 이동 ▶</button>
     </div>
 
-    <div class="card hidden screen" id="reWatchScreen">
+    <div class="card screen" id="reWatchScreen">
         <h2 style="color:var(--danger-color);">📱 꼭 기억하세요!</h2>
         <div class="video-box">
             <div id="reWatchLabel" class="video-label">영상 시청 중 (대기...)</div>
@@ -213,7 +240,7 @@ button {
         <button id="toPreventionBtn" class="primary" disabled style="background:#ccc;">영상을 시청해 주세요</button>
     </div>
 
-    <div class="card hidden screen" id="preventionScreen">
+    <div class="card screen" id="preventionScreen">
         <h2 style="background:#fff3f3; padding:10px; border-radius:10px;">🛡️ 보이스피싱 예방 완결편</h2>
         <div class="prevent-item">1. 모르는 전화는 '어서끊자'</div>
         <div class="prevent-item">2. 확인할 땐 알려준 번호가 아닌 공식 고객센터로 연락</div>
@@ -225,14 +252,14 @@ button {
         <button id="resultBtn" class="btn-gold" style="margin-top:20px;">내 진단 결과 보기 ▶</button>
     </div>
 
-    <div class="card hidden screen" id="resultBox">
+    <div class="card screen" id="resultBox">
         <h2>진단 결과</h2>
         <div id="result" style="font-size:3rem; font-weight:900; text-align:center; margin-bottom:15px;"></div>
         <div id="detailResult"></div>
         <button id="goFinalBtn" class="primary" style="margin-top:15px;"></button>
     </div>
 
-    <div class="card hidden screen" id="finalGuideBox">
+    <div class="card screen" id="finalGuideBox">
         <h2 style="color:var(--danger-color);">🚨 긴급 조치 가이드</h2>
         <div style="background:#fff5f5; padding:20px; border-radius:20px; border:3px solid var(--danger-color);">
             <p style="font-size:1.4rem; color:var(--danger-color); text-align:center; font-weight:900;">지금 즉시 실행하세요!</p>
@@ -246,7 +273,7 @@ button {
         <button class="primary" onclick="location.reload()" style="margin-top:10px; background:#666;">다시 처음으로</button>
     </div>
 
-    <div class="card hidden screen" id="shareOnlyBox">
+    <div class="card screen" id="shareOnlyBox">
         <h2 style="color:var(--success-color);">✅ 예방 수칙 완료</h2>
         <p style="font-size:1.4rem; text-align:center;">진단 결과 안전합니다!<br>가족들에게도 이 시스템을 알려주세요.</p>
         <button class="share-btn" onclick="shareSystem()">💬 가족·지인에게 공유하기</button>
@@ -260,7 +287,7 @@ const questions = [
     { q:"2. '명의도용', '범죄 연루', '구속수사'를 언급하며 수사기관(검찰, 경찰)에서 전화가 왔습니까?", choices:["예 (받았습니다)","아니오"], desc:"수사기관은 절대로 전화로 자산 내역을 묻거나 돈을 요구하지 않고, 구속등의 이유로 협박하지 않습니다.", risk:3, videoId:"MULTI", vTitle:"📽️ 수사기관, 검찰 사칭 보이스피싱" },
     { q:"3. 보안 점검 등을 이유로 '특정 앱(원격제어 등)' 설치했습니까?", choices:["예 (설치함)","아니오"], desc:"앱을 설치하는 순간 폰의 정보가 유출되고 전화가 가로채기 당합니다.", risk:5 },
     { q:"4. 금감원(1332)이나 검찰청(1301)에 직접 전화해서 확인해보라고 유도합니까?", choices:["예 (유도함)","아니오"], desc:"악성어플이 설치되면 어디에 전화해도 범인이 전화를 가로채서 받습니다.", risk:5 },
-    { q:"5. 텔레그램, 시그널, 라인, 왓츠, 위챗, 시그널 등 메신저로 수사 지시를 받거나 보고하였습니까?", choices:["예 (그렇다)","아니오"], desc:"수사기관은 절대로 텔레그램, 시그널, 라인, 왓츠, 위챗, 시그널 등 메신저를 통해 조사를 진행하지 않습니다.", risk:5 },
+    { q:"5. 텔레그램, 시그널, 라인, 왓츠, 위챗, 시그널 등 메신저로 수사 지시를 받거나 보고하였습니까?", choices:["예 (그렇다)","아니오"], desc:"수사기관은 절대로 메신저를 통해 조사를 진행하지 않습니다.", risk:5 },
     { q:"6. 수사 보안이라며 '주변 사람이나 가족에게 절대 말하지 말라'고 합니까?", choices:["예 (그렇다)","아니오"], desc:"외부 도움을 차단하여 판단력을 흐리게 하려는 범죄 수법입니다.", risk:5 },
     { q:"7. 전화나 영상통화 또는 CCTV로 본인을 계속 감시하고 있다는 느낌을 받고있습니까?", choices:["예 (그렇다)","아니오"], desc:"범인이 실시간으로 상황을 통제하려는 시도입니다. 100% 피싱입니다.", risk:5 },
     { q:"8. 낮은 이자로 대출을 바꿔주겠다며 걸려온 광고 전화를 받았습니까?", choices:["예 (받았습니다)","아니오"], desc:"은행은 먼저 전화를 걸어 낮은 금리로 바꿔주겠다고 하지 않습니다.", risk:3, videoId:"ePcTTZIi2uw", vTitle:"📽️ 대출 빙자 보이스피싱" },
@@ -271,9 +298,10 @@ const questions = [
 let index = 0, selectedRisks = [], highRiskDetected = false;
 let screenHistory = ['intro'];
 
+// ✨ 개선점 1. Fade-in 애니메이션을 위한 클래스 토글 (active 추가/제거)
 function showScreen(screenId) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-    document.getElementById(screenId).classList.remove('hidden');
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
     const backBtn = document.getElementById('backBtn');
     if (screenId === 'intro' || screenId === 'shareOnlyBox' || screenId === 'finalGuideBox') {
         backBtn.style.display = 'none';
@@ -281,7 +309,7 @@ function showScreen(screenId) {
 }
 
 function goBack() {
-    if (index > 0 && !document.getElementById('quiz').classList.contains('hidden')) {
+    if (index > 0 && document.getElementById('quiz').classList.contains('active')) {
         index--; loadQ();
     } else if (screenHistory.length > 1) {
         screenHistory.pop();
@@ -344,7 +372,7 @@ function answer(i){
         playVid(q.videoId === "MULTI" ? 'vNsf2p9CDZQ' : q.videoId);
     }
     const dBox = document.getElementById("descBox");
-    dBox.innerText = q.desc; // 텍스트만 깔끔하게 삽입 (위의 CSS 말풍선 적용됨)
+    dBox.innerText = q.desc;
     dBox.classList.remove("hidden");
     
     const tText = document.getElementById("timerText");
@@ -359,7 +387,7 @@ document.getElementById("nextBtn").onclick = () => {
     index++;
     if(index >= questions.length) { 
         screenHistory.push('reWatchScreen'); showScreen('reWatchScreen');
-        document.getElementById("reWatchFrame").src = "https://www.youtube.com/embed/tV-yM5EWJ3k?autoplay=1&start=76";
+        document.getElementById("reWatchFrame").src = "https://www.youtube.com/embed/tV-yM5EWJ3k?autoplay=1&start=75";
         let vTimer = 10;
         const vInterval = setInterval(() => {
             vTimer--; document.getElementById("reWatchLabel").innerText = `영상 시청 중 (${vTimer}초...)`;
@@ -409,7 +437,23 @@ document.getElementById("goFinalBtn").onclick = () => {
     window.scrollTo(0,0);
 };
 
-function shareSystem() { alert("시스템 주소가 복사되었습니다."); }
+// ✨ 개선점 3. 스마트폰 기본 공유 기능(Web Share API) 연동
+async function shareSystem() {
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: '보이스피싱 예방 진단 시스템',
+                text: '실제 수사 데이터를 기반으로 나의 보이스피싱 위험도를 점검해보세요. (광주광산경찰서 제공)',
+                url: window.location.href
+            });
+        } catch (err) {
+            console.log('공유가 취소되었거나 오류가 발생했습니다.', err);
+        }
+    } else {
+        // 공유 기능을 지원하지 않는 PC나 구형 브라우저를 위한 대비
+        alert("시스템 주소가 복사되었습니다.\n(현재 브라우저는 바로 공유하기 기능을 지원하지 않습니다.)");
+    }
+}
 </script>
 </body>
 </html>
