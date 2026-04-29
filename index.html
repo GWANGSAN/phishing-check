@@ -6,6 +6,10 @@
 <meta name="theme-color" content="#002b5c">
 <title>보이스피싱 예방 진단 시스템</title>
 
+<!-- Firebase SDK (통계용) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
 <style>
 :root {
     --primary-color: #002b5c;
@@ -24,24 +28,37 @@ body {
     overflow-wrap: break-word;
 }
 
-/* ✨ 개선점 4. 상단 헤더 글래스모피즘(투명 블러) 적용 */
+/* 상단 헤더 글래스모피즘 */
 .header { 
-    background: rgba(0, 43, 92, 0.85); /* 약간의 투명도 */
-    backdrop-filter: blur(10px); /* 블러 효과 */
+    background: rgba(0, 43, 92, 0.85);
+    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     color: white; 
-    padding: 15px 10px; 
+    padding: 10px; 
     text-align: center; 
     font-weight: 800; 
-    font-size: 1.3rem; 
+    font-size: 1.1rem; 
     position: sticky; 
     top: 0; 
     z-index: 1000; 
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
 }
+
+/* [추가] 상단 통계 스타일 */
+.mini-stats {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    font-size: 0.75rem;
+    margin-top: 5px;
+    font-weight: 400;
+    opacity: 0.9;
+}
+.mini-stats b { color: #ffd600; }
 
 .back-btn {
     position: absolute;
@@ -65,14 +82,13 @@ body {
     border-radius: 20px; 
     padding: 20px 15px; 
     box-shadow: 0 4px 20px rgba(0,0,0,0.08); 
-    min-height: calc(100vh - 80px); 
+    min-height: calc(100vh - 100px); 
     display: flex; 
     flex-direction: column; 
     box-sizing: border-box;
     position: relative;
 }
 
-/* ✨ 개선점 1. 부드러운 화면 전환을 위한 Fade-in 클래스 설정 */
 .screen { display: none; }
 .screen.active {
     display: flex;
@@ -102,17 +118,11 @@ button {
     justify-content: center;
     text-align: center;
     line-height: 1.2;
-    /* ✨ 개선점 2. 버튼 터치 피드백을 위한 트랜지션 추가 */
     transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.2s;
 }
 
-/* ✨ 개선점 2. 버튼 터치 시 살짝 눌리는 효과 */
-button:active {
-    transform: scale(0.96);
-}
-button:disabled {
-    transform: none; /* 비활성화 상태에서는 눌림 효과 방지 */
-}
+button:active { transform: scale(0.96); }
+button:disabled { transform: none; }
 
 .primary { background: var(--primary-color); color: white; }
 .video-btn { background: var(--danger-color); color: white; animation: pulse 2s infinite; }
@@ -120,9 +130,6 @@ button:disabled {
 .btn-no { background: #448aff; color: white; border-bottom: 5px solid #1565c0; margin-bottom: 5px; }
 .btn-gold { background: #ffd600; color: #000; border: 2px solid #000; }
 
-/* =========================================
-   🚨 [강조] 경찰관 안내 말풍선 디자인
-   ========================================= */
 .descBox { 
     margin-top: 20px; 
     padding: 20px; 
@@ -157,9 +164,6 @@ button:disabled {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* =========================================
-   📺 피해 사례 화면 (수정 버전 유지)
-   ========================================= */
 #caseScreen { background: linear-gradient(180deg, #202020 0%, #101010 100%); border: 4px solid var(--danger-color); color: #fff; }
 .case-title-bar { background: #000; padding: 15px; border-radius: 10px; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; border-bottom: 3px solid var(--danger-color); }
 .case-title-bar h2 { color: #fff; margin: 0; font-size: 1.7rem; }
@@ -168,10 +172,13 @@ button:disabled {
 .caseItem-v2 p { color: #ccc; font-size: 1.1rem; text-align: left; }
 .caseMoney-v2 { display: block; font-size: 2.2rem; font-weight: 900; color: #fff; text-align: right; }
 
-/* 나머지 스타일 유지 */
-.video-box { margin-top: 15px; border-radius: 15px; overflow: hidden; border: 4px solid var(--danger-color); background: #000; }
+.video-box { margin-top: 15px; border-radius: 15px; overflow: hidden; border: 4px solid var(--danger-color); background: #000; position: relative; }
 .video-container { position: relative; padding-bottom: 56.25%; height: 0; }
 .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+/* [추가] 영상 조작 방지 글래스 */
+.video-glass { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; background: rgba(0,0,0,0); }
+
 .video-label { text-align: center; background: var(--danger-color); color: white; padding: 8px; font-weight: 900; font-size: 1.1rem; }
 .prevent-item { background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 8px solid var(--primary-color); font-size: 1.3rem; font-weight: 800; }
 .prevent-sub { font-size: 1rem; color: var(--danger-color); display: block; margin-top: 4px; font-weight: bold; }
@@ -180,7 +187,6 @@ button:disabled {
 .report-desc { font-size: 1.2rem; color: var(--danger-color); font-weight: 900; background: #fff3f3; padding: 10px; border-radius: 10px; border-left: 5px solid var(--danger-color); }
 .share-btn { background: #fee500; color: #3c1e1e; border: 2px solid #3c1e1e; margin-top: 15px; }
 
-/* 컴포넌트 내부 숨김 처리를 위한 유틸리티 클래스 */
 .hidden { display: none !important; }
 .blink { animation: blink 1s infinite; }
 @keyframes blink { 50% { opacity: 0.5; } }
@@ -193,6 +199,12 @@ button:disabled {
 <div class="header">
     <button id="backBtn" class="back-btn" onclick="goBack()">◀</button>
     <span>🚔 광주광산경찰서 피싱범죄수사팀</span>
+    <!-- [추가] 통계 현출 영역 -->
+    <div class="mini-stats">
+        <span>누적 진단: <b id="totalCount">0</b></span>
+        <span>오늘 방문: <b id="todayCount">0</b></span>
+        <span>공유 횟수: <b id="shareCount">0</b></span>
+    </div>
 </div>
 
 <div class="container">
@@ -204,6 +216,8 @@ button:disabled {
             <div class="video-label" style="background:var(--primary-color);">안내 영상 시청 중 (<span id="count">30</span>초)</div>
             <div class="video-container">
                 <iframe id="introFrame" src="" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+                <!-- 조작 방지 글래스 -->
+                <div class="video-glass"></div>
             </div>
         </div>
         <button id="startBtn" class="primary" style="margin-top:15px;" disabled>안내 영상을 시청해 주세요</button>
@@ -234,6 +248,8 @@ button:disabled {
             <div id="reWatchLabel" class="video-label">영상 시청 중 (대기...)</div>
             <div class="video-container">
                 <iframe id="reWatchFrame" src="" frameborder="0" allowfullscreen></iframe>
+                <!-- 조작 방지 글래스 -->
+                <div class="video-glass"></div>
             </div>
         </div>
         <p style="text-align:center; font-size:1.3rem; margin-top:15px; font-weight:800;">영상을 시청하신 후<br>아래 버튼을 눌러주세요.</p>
@@ -282,6 +298,26 @@ button:disabled {
 </div>
 
 <script>
+// [추가] Firebase 초기화
+const firebaseConfig = {
+    apiKey: "AIzaSyA2KjZYbexB646qWgZFHgfwl-cTEUNbj3Y",
+    authDomain: "phishing-check-647d9.firebaseapp.com",
+    projectId: "phishing-check-647d9",
+    databaseURL: "https://phishing-check-647d9-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    storageBucket: "phishing-check-647d9.firebasestorage.app",
+    messagingSenderId: "21179667892",
+    appId: "1:21179667892:web:e24800f87e0c773b760ee1"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// [추가] 통계 데이터 동기화
+const todayStr = new Date().toISOString().split('T')[0];
+db.ref('stats/totalCount').on('value', s => document.getElementById('totalCount').innerText = (s.val() || 0).toLocaleString());
+db.ref(`stats/daily/${todayStr}`).on('value', s => document.getElementById('todayCount').innerText = (s.val() || 0).toLocaleString());
+db.ref('stats/shareCount').on('value', s => document.getElementById('shareCount').innerText = (s.val() || 0).toLocaleString());
+db.ref(`stats/daily/${todayStr}`).transaction(c => (c || 0) + 1);
+
 const questions = [
     { q:"1. 본인이 신청하지 않은 '카드 발급'이나 '배송 안내' 문자를 받은 적 있습니까?", choices:["예 (받았습니다)","아니오"], desc:"개인정보를 빼내기 위한 거짓 수법입니다. 본인이 신청하지 않았다면 즉시 전화를 끊으세요.", risk:3, videoId:"EC8lTWKjCQM", vTitle:"📽️ 카드배송 빙자 보이스피싱" },
     { q:"2. '명의도용', '범죄 연루', '구속수사'를 언급하며 수사기관(검찰, 경찰)에서 전화가 왔습니까?", choices:["예 (받았습니다)","아니오"], desc:"수사기관은 절대로 전화로 자산 내역을 묻거나 돈을 요구하지 않고, 구속등의 이유로 협박하지 않습니다.", risk:3, videoId:"MULTI", vTitle:"📽️ 수사기관, 검찰 사칭 보이스피싱" },
@@ -298,7 +334,6 @@ const questions = [
 let index = 0, selectedRisks = [], highRiskDetected = false;
 let screenHistory = ['intro'];
 
-// ✨ 개선점 1. Fade-in 애니메이션을 위한 클래스 토글 (active 추가/제거)
 function showScreen(screenId) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(screenId).classList.add('active');
@@ -321,7 +356,7 @@ document.getElementById("videoBtn").onclick = function(){
     this.classList.add("hidden");
     document.getElementById("introVideoBox").classList.remove("hidden");
     document.getElementById("introFrame").src = "https://www.youtube.com/embed/tV-yM5EWJ3k?autoplay=1&rel=0";
-    let timer = 30;
+    let timer = 0;
     const interval = setInterval(() => {
         timer--; document.getElementById("count").innerText = timer;
         if(timer <= 0) {
@@ -334,7 +369,7 @@ document.getElementById("videoBtn").onclick = function(){
 };
 
 document.getElementById("startBtn").onclick = () => { 
-    document.getElementById("introFrame").src = ""; // 영상 멈춤
+    document.getElementById("introFrame").src = "";
     screenHistory.push('caseScreen'); showScreen('caseScreen'); 
 };
 
@@ -368,7 +403,8 @@ function answer(i){
     document.querySelectorAll("#choices button").forEach(b => b.disabled = true);
     if(q.videoId) {
         const area = document.getElementById("dynamicVideoArea");
-        area.innerHTML = `<div class="video-box"><div class="video-label">${q.vTitle}</div><div class="video-container"><iframe id="qFrame" src="" frameborder="0" allowfullscreen></iframe></div>${q.videoId === "MULTI" ? `<div style="padding:8px; background:#fff; display:flex; flex-direction:column; gap:8px;"><button onclick="playVid('vNsf2p9CDZQ')" style="font-size:1.1rem; padding:12px; background:var(--danger-color); color:white; margin:0;">📺 영상 1 보기</button><button onclick="playVid('CvEsZdEL00I')" style="font-size:1.1rem; padding:12px; background:var(--danger-color); color:white; margin:0;">📺 영상 2 보기</button></div>` : ''}</div>`;
+        // [수정] 퀴즈 영상 영역에도 글래스(조작방지) 추가
+        area.innerHTML = `<div class="video-box"><div class="video-label">${q.vTitle}</div><div class="video-container"><iframe id="qFrame" src="" frameborder="0" allowfullscreen></iframe><div class="video-glass"></div></div>${q.videoId === "MULTI" ? `<div style="padding:8px; background:#fff; display:flex; flex-direction:column; gap:8px; z-index:20; position:relative;"><button onclick="playVid('vNsf2p9CDZQ')" style="font-size:1.1rem; padding:12px; background:var(--danger-color); color:white; margin:0;">📺 영상 1 보기</button><button onclick="playVid('CvEsZdEL00I')" style="font-size:1.1rem; padding:12px; background:var(--danger-color); color:white; margin:0;">📺 영상 2 보기</button></div>` : ''}</div>`;
         playVid(q.videoId === "MULTI" ? 'vNsf2p9CDZQ' : q.videoId);
     }
     const dBox = document.getElementById("descBox");
@@ -381,13 +417,13 @@ function answer(i){
     setTimeout(() => { tText.classList.add("hidden"); nBtn.classList.remove("hidden"); }, 2000); 
 }
 
-function playVid(id) { const frame = document.getElementById("qFrame"); if(frame) frame.src = `https://www.youtube.com/embed/${id}?autoplay=1&start=8`; }
+function playVid(id) { const frame = document.getElementById("qFrame"); if(frame) frame.src = `https://www.youtube.com/embed/${id}?autoplay=1&start=8&controls=0`; }
 
 document.getElementById("nextBtn").onclick = () => {
     index++;
     if(index >= questions.length) { 
         screenHistory.push('reWatchScreen'); showScreen('reWatchScreen');
-        document.getElementById("reWatchFrame").src = "https://www.youtube.com/embed/tV-yM5EWJ3k?autoplay=1&start=75";
+        document.getElementById("reWatchFrame").src = "https://www.youtube.com/embed/tV-yM5EWJ3k?autoplay=1&start=75&controls=0";
         let vTimer = 10;
         const vInterval = setInterval(() => {
             vTimer--; document.getElementById("reWatchLabel").innerText = `영상 시청 중 (${vTimer}초...)`;
@@ -403,11 +439,15 @@ document.getElementById("nextBtn").onclick = () => {
 };
 
 document.getElementById("toPreventionBtn").onclick = () => { 
-    document.getElementById("reWatchFrame").src = ""; // 영상 멈춤
+    document.getElementById("reWatchFrame").src = "";
     screenHistory.push('preventionScreen'); showScreen('preventionScreen'); 
 };
 
-document.getElementById("resultBtn").onclick = () => { screenHistory.push('resultBox'); showScreen('resultBox'); showResult(); };
+document.getElementById("resultBtn").onclick = () => { 
+    // [추가] 진단 완료 시 누적 카운트 증가
+    db.ref('stats/totalCount').transaction(c => (c || 0) + 1);
+    screenHistory.push('resultBox'); showScreen('resultBox'); showResult(); 
+};
 
 function showResult(){
     window.scrollTo(0,0);
@@ -437,8 +477,9 @@ document.getElementById("goFinalBtn").onclick = () => {
     window.scrollTo(0,0);
 };
 
-// ✨ 개선점 3. 스마트폰 기본 공유 기능(Web Share API) 연동
 async function shareSystem() {
+    // [추가] 공유 실행 시 공유 카운트 증가
+    db.ref('stats/shareCount').transaction(c => (c || 0) + 1);
     if (navigator.share) {
         try {
             await navigator.share({
@@ -450,7 +491,6 @@ async function shareSystem() {
             console.log('공유가 취소되었거나 오류가 발생했습니다.', err);
         }
     } else {
-        // 공유 기능을 지원하지 않는 PC나 구형 브라우저를 위한 대비
         alert("시스템 주소가 복사되었습니다.\n(현재 브라우저는 바로 공유하기 기능을 지원하지 않습니다.)");
     }
 }
